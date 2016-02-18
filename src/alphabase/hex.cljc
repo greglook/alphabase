@@ -8,7 +8,7 @@
 (defn- byte->hex
   "Converts a single byte value to a two-character hex string."
   [value]
-  (let [hex #?(:clj (Integer/toHexString (if (neg? value) (+ 256 value) value))
+  (let [hex #?(:clj (Integer/toHexString value)
                :cljs (.toString value 16))]
     (if (= 1 (count hex))
       (str "0" hex)
@@ -18,8 +18,7 @@
 (defn- hex->byte
   "Converts a two-character hex string into a byte value."
   [hex]
-  #?(:clj (let [value (Integer/parseInt hex 16)]
-            (if (< 127 value) (- value 256) value))
+  #?(:clj (Integer/parseInt hex 16)
      :cljs (js/parseInt hex 16)))
 
 
@@ -29,9 +28,7 @@
   ^String
   [^bytes data]
   (when (and data (pos? (alength data)))
-    (->> (range (alength data))
-         (map #(byte->hex (aget data %)))
-         (str/join))))
+    (str/join (map byte->hex (bytes/byte-seq data)))))
 
 
 (defn decode
@@ -43,9 +40,8 @@
     (let [length (/ (count data) 2)
           array (bytes/byte-array length)]
       (dotimes [i length]
-        (let [hex (subs data (* 2 i) (* 2 (inc i)))
-              value (hex->byte hex)]
-          (aset array i (byte value))))
+        (let [hex (subs data (* 2 i) (* 2 (inc i)))]
+          (bytes/set-byte array i (hex->byte hex))))
       array)))
 
 

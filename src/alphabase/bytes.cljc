@@ -10,4 +10,34 @@
      :cljs (js/Uint8Array. (js/ArrayBuffer. size))))
 
 
-; TODO: conversion functions to make values into Java byte range [-128, 127] vs intuitive byte range [0, 255]
+(defn to-byte
+  "Coerces a number to a byte value."
+  [x]
+  #?(:clj (if (< 127 x) (- x 256) x)
+     :cljs x))
+
+
+(defn from-byte
+  "Coerces a byte value to a number."
+  [x]
+  #?(:clj (if (neg? x) (+ 256 x) x)
+     :cljs x))
+
+
+(defn get-byte
+  "Reads a byte value out of an array and coerces it to a number."
+  [array i]
+  (from-byte (aget array i)))
+
+
+(defn set-byte
+  "Sets a byte value in an array after coercing it from a number."
+  [array i x]
+  (aset array i (byte (to-byte x))))
+
+
+(defn byte-seq
+  "Return a sequence of the bytes in an array, after coercion."
+  [array]
+  #?(:clj (map from-byte array)
+     :cljs (map #(aget array %) (range (alength array)))))
