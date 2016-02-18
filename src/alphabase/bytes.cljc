@@ -6,7 +6,7 @@
 (defn byte-array
   "Creates a new array to hold byte data."
   [size]
-  #?(:clj (byte-array size)
+  #?(:clj (clojure.core/byte-array size)
      :cljs (js/Uint8Array. (js/ArrayBuffer. size))))
 
 

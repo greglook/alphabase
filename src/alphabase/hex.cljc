@@ -41,12 +41,12 @@
   [^String data]
   (when-not (empty? data)
     (let [length (/ (count data) 2)
-          data (bytes/byte-array length)]
+          array (bytes/byte-array length)]
       (dotimes [i length]
         (let [hex (subs data (* 2 i) (* 2 (inc i)))
-              b (hex->byte hex)]
-          (aset data i (byte b))))
-      data)))
+              value (hex->byte hex)]
+          (aset array i (byte value))))
+      array)))
 
 
 (defn validate
