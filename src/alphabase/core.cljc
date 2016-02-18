@@ -7,7 +7,7 @@
 (defn- add-byte
   "Adds a single byte value to a vector of digits. Returns the updated digit
   vector."
-  [digits value]
+  [base digits value]
   (loop [digits digits
          carry value
          j 0]
@@ -35,7 +35,7 @@
   (when-not (empty? data)
     (let [base (count alphabet)
           bytes (bytes/byte-seq data)
-          digits (reduce add-byte [0] bytes)
+          digits (reduce (partial add-byte base) [0] bytes)
           zeroes (count (take-while zero? bytes))]
       (->> (reverse digits)
            (concat (repeat zeroes 0))

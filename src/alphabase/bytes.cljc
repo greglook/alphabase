@@ -26,13 +26,13 @@
 
 (defn get-byte
   "Reads a byte value out of an array and coerces it to a number."
-  [array i]
+  [^bytes array i]
   (from-byte (aget array i)))
 
 
 (defn set-byte
   "Sets a byte value in an array after coercing it from a number."
-  [array i x]
+  [^bytes array i x]
   (aset array i (byte (to-byte x))))
 
 
