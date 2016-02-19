@@ -3,13 +3,6 @@
   (:refer-clojure :exclude [byte-array]))
 
 
-(defn byte-array
-  "Creates a new array to hold byte data."
-  [size]
-  #?(:clj (clojure.core/byte-array size)
-     :cljs (js/Uint8Array. (js/ArrayBuffer. size))))
-
-
 (defn to-byte
   "Coerces a number to a byte value."
   [x]
@@ -41,3 +34,27 @@
   [array]
   #?(:clj (map from-byte array)
      :cljs (map #(aget array %) (range (alength array)))))
+
+
+(defn bytes=
+  "Returns true if two byte sequences are the same length and have the same
+  byte content."
+  [a b]
+  (= (byte-seq a) (byte-seq b)))
+
+
+(defn byte-array
+  "Creates a new array to hold byte data."
+  [size]
+  #?(:clj (clojure.core/byte-array size)
+     :cljs (js/Uint8Array. (js/ArrayBuffer. size))))
+
+
+(defn random-bytes
+  "Returns a byte array `size` bytes long with random content."
+  [size]
+  (let [data (byte-array size)]
+    #?(:clj (.nextBytes (java.security.SecureRandom.) data)
+       :cljs (dotimes [i size]
+               (set-byte data i (rand-int 256))))
+    data))

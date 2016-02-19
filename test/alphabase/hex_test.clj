@@ -2,7 +2,7 @@
   (:require
     [clojure.test :refer :all]
     [alphabase.hex :as hex]
-    [alphabase.test-utils :refer :all]))
+    [alphabase.bytes :refer [bytes= random-bytes]]))
 
 
 (deftest encoding-test
