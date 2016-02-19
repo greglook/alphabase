@@ -4,5 +4,9 @@
   :license {:name "Public Domain"
             :url "http://unlicense.org/"}
 
-  :dependencies
-  [[org.clojure/clojure "1.7.0"]])
+  :aliases {"node-repl" ["run" "-m" "clojure.main" "node_repl.clj"]}
+
+  :profiles
+  {:dev {:dependencies
+         [[org.clojure/clojure "1.7.0"]
+          [org.clojure/clojurescript "1.7.170"]]}})
