@@ -10,7 +10,7 @@
 
 (defn- bytes->tokens
  "Encodes a byte array into a sequence of alphabet tokens."
- [alphabet ^bytes data]
+ [^String alphabet ^bytes data]
  (let [base (count alphabet)]
    #?(:clj ; In Clojure, use the optimized BigInt class for division.
       (loop [n (bigint (BigInteger. 1 data))
@@ -30,18 +30,18 @@
             [digits value]
             (loop [digits digits
                    carry value
-                   j 0]
-              (if (< j (count digits))
+                   i 0]
+              (if (< i (count digits))
                 ; Propagate carry value across digits.
-                (let [carry' (+ (bit-shift-left (nth digits j) 8) carry)]
-                  (recur (assoc digits j (mod carry' base))
+                (let [carry' (+ carry (bit-shift-left (nth digits i) 8))]
+                  (recur (assoc digits i (mod carry' base))
                          (int (/ carry' base))
-                         (inc j)))
-                ; Outside digits, add new for remaining carry
+                         (inc i)))
+                ; Outside digits, add new for remaining carry.
                 (if (pos? carry)
                   (recur (conj digits (mod carry base))
                          (int (/ carry base))
-                         (inc j))
+                         (inc i))
                   digits))))
           [0])
         (reverse)
@@ -49,8 +49,8 @@
 
 
 (defn- tokens->bytes
-  "Decodes a sequence of alphabet tokens into a byte array."
-  [alphabet data]
+  "Decodes a sequence of alphabet tokens into a sequence of byte values."
+  [^String alphabet data]
   (let [base (count alphabet)]
     #?(:clj
        (let [byte-data
@@ -83,7 +83,7 @@
 (defn encode
   "Encodes binary data using the given alphabet. Returns the encoded string, or
   nil if the input is nil or empty."
-  [alphabet data]
+  [alphabet ^bytes data]
   {:pre [(string? alphabet) (not (empty? alphabet))]}
   (when-not (empty? data)
     (let [zeroes (count (take-while zero? (bytes/byte-seq data)))]
