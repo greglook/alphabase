@@ -95,7 +95,7 @@
                    (let [carry' (+ carry (* base (nth bytev i)))]
                      (recur (assoc bytev i (bit-and carry' 0xff))
                             (bit-shift-right carry' 8)
-                            (inc j)))
+                            (inc i)))
                    ; Outside bytes, add new for remaining carry.
                    (if (pos? carry)
                      (recur (conj bytev (bit-and carry 0xff))
@@ -110,8 +110,8 @@
   "Encodes binary data using the given alphabet. Returns the encoded string, or
   nil if the input is nil or empty."
   [alphabet ^bytes data]
-  {:pre [(string? alphabet) (not (empty? alphabet))]}
-  (when-not (empty? data)
+  {:pre [(string? alphabet) (< 1 (count alphabet))]}
+  (when-not (zero? (alength data))
     (let [zeroes (count (take-while zero? (bytes/byte-seq data)))]
       (apply str (concat (repeat zeroes (first alphabet))
                          (when (< zeroes (alength data))
