@@ -4,15 +4,14 @@
     [alphabase.bytes :as bytes]))
 
 
-; TODO: benchmark this code
-; TODO: switch to using transient collections?
-
-
 (defn- bytes->tokens
  "Encodes a byte array into a sequence of alphabet tokens."
  [^String alphabet ^bytes data]
+ ; Algorithms benchmarked for base58-check encoding 32 bytes of data.
  (let [base (count alphabet)]
-   #?(:clj ; In Clojure, use the optimized BigInt class for division.
+   #?(; In Clojure, use the optimized BigInt class for division.
+      ; bigint division: ~67 µs
+      :clj
       (loop [n (bigint (BigInteger. 1 data))
              s (list)]
         (if (< n base)
@@ -22,7 +21,10 @@
               (/ (- n r) base)
               (conj s (nth alphabet r))))))
 
-      :cljs ; In ClojureScript, implement native big-integer byte division.
+      ; In ClojureScript, implement native big-integer byte division.
+      ; persistent collections: ~620 µs
+      ; transient collections:  ~515 µs
+      :cljs
       (->>
         (bytes/byte-seq data)
         (reduce
@@ -34,16 +36,17 @@
               (if (< i (count digits))
                 ; Propagate carry value across digits.
                 (let [carry' (+ carry (bit-shift-left (nth digits i) 8))]
-                  (recur (assoc digits i (mod carry' base))
+                  (recur (assoc! digits i (mod carry' base))
                          (int (/ carry' base))
                          (inc i)))
                 ; Outside digits, add new for remaining carry.
                 (if (pos? carry)
-                  (recur (conj digits (mod carry base))
+                  (recur (conj! digits (mod carry base))
                          (int (/ carry base))
                          (inc i))
                   digits))))
-          [0])
+          (transient [0]))
+        (persistent!)
         (reverse)
         (map (partial nth alphabet))))))
 
@@ -51,8 +54,10 @@
 (defn- tokens->bytes
   "Decodes a sequence of alphabet tokens into a sequence of byte values."
   [^String alphabet data]
+  ; Algorithms benchmarked for base58-check decoding 32 bytes of data.
   (let [base (count alphabet)]
-    #?(:clj
+    #?(; bigint math: ~74 µs
+       :clj
        (let [byte-data
              (->>
                (reverse data)
@@ -75,13 +80,15 @@
            (drop 1 byte-data)
            (seq byte-data)))
 
+       ; persistent collections: ~255 µs
+       ; transient collections:  ~200 µs
        :cljs
        (->>
          (seq data)
          (reduce
            (fn add-token
              [bytev token]
-             (let [value (.indexOf alphabet token)]
+             (let [value (.indexOf alphabet (str token))]
                (when (neg? value)
                  (throw (ex-info
                           (str "Invalid token " (pr-str token)
@@ -93,16 +100,17 @@
                  (if (< i (count bytev))
                    ; Emit bytes as we carry values forward.
                    (let [carry' (+ carry (* base (nth bytev i)))]
-                     (recur (assoc bytev i (bit-and carry' 0xff))
+                     (recur (assoc! bytev i (bit-and carry' 0xff))
                             (bit-shift-right carry' 8)
                             (inc i)))
                    ; Outside bytes, add new for remaining carry.
                    (if (pos? carry)
-                     (recur (conj bytev (bit-and carry 0xff))
+                     (recur (conj! bytev (bit-and carry 0xff))
                             (bit-shift-right carry 8)
                             (inc i))
                      bytev)))))
-           [0])
+           (transient [0]))
+         (persistent!)
          (reverse)))))
 
 

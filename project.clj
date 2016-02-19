@@ -8,5 +8,6 @@
 
   :profiles
   {:dev {:dependencies
-         [[org.clojure/clojure "1.7.0"]
+         [[criterium "0.4.4"]
+          [org.clojure/clojure "1.7.0"]
           [org.clojure/clojurescript "1.7.170"]]}})
