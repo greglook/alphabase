@@ -1,5 +1,5 @@
 (ns alphabase.base58
-  "Native base58-check encoding implementation."
+  "Base58-check encoding implementation."
   (:require
     [alphabase.core :as abc]))
 
@@ -17,5 +17,5 @@
 (defn decode
   "Decodes a base58-check string into a byte array."
   ^bytes
-  [data]
-  (abc/decode alphabet data))
+  [tokens]
+  (abc/decode alphabet tokens))
