@@ -4,114 +4,55 @@
     [alphabase.bytes :as bytes]))
 
 
-(defn- bytes->tokens
- "Encodes a byte array into a sequence of alphabet tokens."
- [^String alphabet ^bytes data]
- ; Algorithms benchmarked for base58-check encoding 32 bytes of data.
- (let [base (count alphabet)]
-   #?(; In Clojure, use the optimized BigInt class for division.
-      ; bigint division: ~67 µs
-      :clj
-      (loop [n (bigint (BigInteger. 1 data))
-             s (list)]
-        (if (< n base)
-          (conj s (nth alphabet n))
-          (let [r (mod n base)]
-            (recur
-              (/ (- n r) base)
-              (conj s (nth alphabet r))))))
+;; ## Encoding
 
-      ; In ClojureScript, implement native big-integer byte division.
-      ; persistent collections: ~620 µs
-      ; transient collections:  ~515 µs
-      :cljs
-      (->>
-        (bytes/byte-seq data)
-        (reduce
-          (fn add-byte
-            [digits value]
-            (loop [digits digits
-                   carry value
-                   i 0]
-              (if (< i (count digits))
-                ; Propagate carry value across digits.
-                (let [carry' (+ carry (bit-shift-left (nth digits i) 8))]
-                  (recur (assoc! digits i (mod carry' base))
-                         (int (/ carry' base))
-                         (inc i)))
-                ; Outside digits, add new for remaining carry.
-                (if (pos? carry)
-                  (recur (conj! digits (mod carry base))
-                         (int (/ carry base))
-                         (inc i))
-                  digits))))
-          (transient [0]))
-        (persistent!)
-        (reverse)
-        (map (partial nth alphabet))))))
-
-
-(defn- tokens->bytes
-  "Decodes a sequence of alphabet tokens into a sequence of byte values."
-  [^String alphabet data]
-  ; Algorithms benchmarked for base58-check decoding 32 bytes of data.
+(defn- bigint-divide
+  "Uses optimized big-integer division to calculate a sequence of tokens from a
+  byte array. Only works in Clojure!"
+  [^String alphabet ^bytes data]
+  ; Bigint math: ~67 µs
   (let [base (count alphabet)]
-    #?(; bigint math: ~74 µs
-       :clj
-       (let [byte-data
-             (->>
-               (reverse data)
-               (map vector (iterate (partial * base) 1N))
-               ^clojure.lang.BigInt
-               (reduce
-                 (fn [n [b c]]
-                   (let [v (.indexOf alphabet (str c))]
-                     (when (neg? v)
-                       (throw (ex-info
-                                (str "Invalid character: " (pr-str c)
-                                     " is not in alphabet " (pr-str alphabet)))))
-                     (+ n (* (bigint v) b))))
-                 0N)
-               (.toBigInteger)
-               (.toByteArray))]
-         (if (and (> (count byte-data) 1)
-                  (zero? (aget byte-data 0))
-                  (neg? (aget byte-data 1)))
-           (drop 1 byte-data)
-           (seq byte-data)))
+    (loop [n (bigint (BigInteger. 1 data))
+           tokens (list)]
+      (if (< n base)
+        (conj tokens (nth alphabet n))
+        (let [digit (mod n base)]
+          (recur
+            (/ (- n digit) base)
+            (conj tokens (nth alphabet digit))))))))
 
-       ; persistent collections: ~255 µs
-       ; transient collections:  ~200 µs
-       :cljs
-       (->>
-         (seq data)
-         (reduce
-           (fn add-token
-             [bytev token]
-             (let [value (.indexOf alphabet (str token))]
-               (when (neg? value)
-                 (throw (ex-info
-                          (str "Invalid token " (pr-str token)
-                               " is not in base-" base " alphabet "
-                               (pr-str alphabet)))))
-               (loop [bytev bytev
-                      carry value
-                      i 0]
-                 (if (< i (count bytev))
-                   ; Emit bytes as we carry values forward.
-                   (let [carry' (+ carry (* base (nth bytev i)))]
-                     (recur (assoc! bytev i (bit-and carry' 0xff))
-                            (bit-shift-right carry' 8)
-                            (inc i)))
-                   ; Outside bytes, add new for remaining carry.
-                   (if (pos? carry)
-                     (recur (conj! bytev (bit-and carry 0xff))
-                            (bit-shift-right carry 8)
-                            (inc i))
-                     bytev)))))
-           (transient [0]))
-         (persistent!)
-         (reverse)))))
+
+(defn- pure-divide
+  "Pure implementation of radix division to calculate a sequence of
+  tokens from a byte array."
+  [alphabet data]
+  ; Persistent collections: ~620 µs
+  ; Transient collections:  ~515 µs
+  (let [base (count alphabet)]
+    (->>
+      (bytes/byte-seq data)
+      (reduce
+        (fn add-byte
+          [digits value]
+          (loop [digits digits
+                 carry value
+                 i 0]
+            (if (< i (count digits))
+              ; Propagate carry value across digits.
+              (let [carry' (+ carry (bit-shift-left (nth digits i) 8))]
+                (recur (assoc! digits i (mod carry' base))
+                       (int (/ carry' base))
+                       (inc i)))
+              ; Outside digits, add new for remaining carry.
+              (if (pos? carry)
+                (recur (conj! digits (mod carry base))
+                       (int (/ carry base))
+                       (inc i))
+                digits))))
+        (transient [0]))
+      (persistent!)
+      (reverse)
+      (map (partial nth alphabet)))))
 
 
 (defn encode
@@ -121,9 +62,83 @@
   {:pre [(string? alphabet) (< 1 (count alphabet))]}
   (when-not (zero? (alength data))
     (let [zeroes (count (take-while zero? (bytes/byte-seq data)))]
-      (apply str (concat (repeat zeroes (first alphabet))
-                         (when (< zeroes (alength data))
-                           (bytes->tokens alphabet data)))))))
+      (->>
+        (when (< zeroes (alength data))
+          #?(:clj (bigint-divide alphabet data)
+             :cljs (pure-divide alphabet data)))
+        (concat (repeat zeroes (first alphabet)))
+        (apply str)))))
+
+
+
+;; ## Decoding
+
+(defn- bigint-multiply
+  "Uses optimized big-integer multiplication to decode a sequence of byte values
+  from a string of tokens. Only works in Clojure!"
+  [^String alphabet tokens]
+  ; Bigint math: ~74 µs
+  (->
+    (reverse tokens)
+    (->>
+      (map vector (iterate (partial * (count alphabet)) 1N))
+      ^clojure.lang.BigInt
+      (reduce
+        (fn read-token
+          [n [base token]]
+          (let [digit (.indexOf alphabet (str token))]
+            (when (neg? digit)
+              (throw (ex-info
+                       (str "Invalid token: " (pr-str token)
+                            " is not in alphabet " (pr-str alphabet)))))
+            (+ n (* (bigint digit) base))))
+        0N)
+      (.toBigInteger)
+      (.toByteArray))
+    (as-> data
+      (if (and (> (alength data) 1)
+               (zero? (aget data 0))
+               (neg? (aget data 1)))
+        (drop 1 data)
+        (seq data)))))
+
+
+(defn- pure-multiply
+  "Pure implementation of radix multiplication to calculate a sequence of byte
+  values from a string of tokens."
+  [^String alphabet tokens]
+  ; Persistent collections: ~255 µs
+  ; Transient collections:  ~200 µs
+  (let [base (count alphabet)]
+    (->>
+      (seq tokens)
+      (reduce
+        (fn add-token
+          [bytev token]
+          (let [value (.indexOf alphabet (str token))]
+            (when (neg? value)
+              (throw (ex-info
+                       (str "Invalid token " (pr-str token)
+                            " is not in base-" base " alphabet "
+                            (pr-str alphabet)))))
+            (loop [bytev bytev
+                   carry value
+                   i 0]
+              (if (< i (count bytev))
+                ; Emit bytes as we carry values forward.
+                (let [carry' (+ carry (* base (nth bytev i)))]
+                  (recur (assoc! bytev i (bit-and carry' 0xff))
+                         (bit-shift-right carry' 8)
+                         (inc i)))
+                ; Outside bytes, add new for remaining carry.
+                (if (pos? carry)
+                  (recur (conj! bytev (bit-and carry 0xff))
+                         (bit-shift-right carry 8)
+                         (inc i))
+                  bytev)))))
+        (transient [0]))
+      (persistent!)
+      (reverse))))
 
 
 (defn decode
@@ -135,7 +150,8 @@
     (let [zeroes (count (take-while #{(first alphabet)} tokens))]
       (if (= zeroes (count tokens))
         (bytes/byte-array zeroes)
-        (let [byte-seq (tokens->bytes alphabet tokens)
+        (let [byte-seq #?(:clj (bigint-multiply alphabet tokens)
+                          :cljs (pure-multiply alphabet tokens))
               data (bytes/byte-array (+ zeroes (count byte-seq)))]
           (dotimes [i (count byte-seq)]
             (bytes/set-byte data (+ zeroes i) (nth byte-seq i)))
