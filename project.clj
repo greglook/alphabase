@@ -6,6 +6,12 @@
 
   :aliases {"node-repl" ["run" "-m" "clojure.main" "node_repl.clj"]}
 
+  :codox
+  {:metadata {:doc/format :markdown}
+   :source-uri "https://github.com/greglook/alphabase/blob/master/{filepath}#L{line}"
+   :doc-paths [""]
+   :output-path "doc/api"}
+
   :profiles
   {:dev {:dependencies
          [[criterium "0.4.4"]
