@@ -50,6 +50,16 @@
      :cljs (js/Uint8Array. (js/ArrayBuffer. size))))
 
 
+(defn init-bytes
+  "Initialize a new array with the given sequence of byte values."
+  [values]
+  (let [size (count values)
+        data (byte-array size)]
+    (dotimes [i size]
+      (set-byte data i (nth values i)))
+    data))
+
+
 (defn random-bytes
   "Returns a byte array `size` bytes long with random content."
   [size]
