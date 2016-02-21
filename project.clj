@@ -13,7 +13,8 @@
   :cljsbuild
   {:builds [{:id "test-nodejs"
              :source-paths ["src" "test"]
-             :compiler {:output-to "target/cljs/tests-node.js"
+             :compiler {:output-dir "target/cljs/out"
+                        :output-to "target/cljs/tests-node.js"
              :main alphabase.test-runner
              :optimizations :none
              :target :nodejs}}]}
