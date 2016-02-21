@@ -2,30 +2,30 @@
   (:require
     [clojure.test :refer :all]
     [alphabase.hex :as hex]
-    [alphabase.bytes :refer [bytes= random-bytes]]))
+    [alphabase.bytes :as b]))
 
 
 (deftest encoding-test
-  (is (nil? (hex/encode (byte-array 0)))
+  (is (nil? (hex/encode (b/byte-array 0)))
       "empty byte array encodes as nil")
-  (is (= "00" (hex/encode (byte-array 1)))
+  (is (= "00" (hex/encode (b/byte-array 1)))
       "single zero byte encodes as two zero chars")
-  (is (= "007f" (hex/encode (doto (byte-array 2)
-                              (aset-byte 1 127))))))
+  (is (= "007f" (hex/encode (doto (b/byte-array 2)
+                              (b/set-byte 1 127))))))
 
 
 (deftest decoding-test
-  (is (bytes= (byte-array 0) (hex/decode ""))
+  (is (b/bytes= (b/byte-array 0) (hex/decode ""))
       "empty string decodes as empty byte array")
-  (is (bytes= (byte-array 1) (hex/decode "00"))
+  (is (b/bytes= (b/byte-array 1) (hex/decode "00"))
       "single zero char decodes as single zero byte"))
 
 
 (deftest reflexive-encoding
   (dotimes [i 10]
-    (let [data (random-bytes 30)
+    (let [data (b/random-bytes 30)
           encoded (hex/encode data)
           decoded (hex/decode encoded)]
-      (is (bytes= data decoded)
+      (is (b/bytes= data decoded)
           (str "Hex coding is reflexive for "
-               (.toString (BigInteger. 1 data) 16))))))
+               (pr-str (seq data)))))))
