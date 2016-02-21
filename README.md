@@ -14,7 +14,31 @@ Leiningen, add the following dependency to your project definition:
 
 ## Usage
 
-TODO
+- `alphabase.bytes` namespace for generic byte-array handling
+- `alphabase.core` with arbitrary alphabet support
+- `alphabase.hex` and `alphabase.base58` with convenience wrappers
+
+## Testing
+
+The unit tests can be run using the following commands:
+
+```sh
+# Clojure tests
+$ lein test
+
+# ClojureScript tests on PhantomJS
+$ lein doo phantom test
+```
+
+For a REPL, you can use these:
+
+```sh
+# Clojure REPL
+$ lein repl
+
+# ClojureScript REPL
+$ lein node-repl
+```
 
 ## License
 
