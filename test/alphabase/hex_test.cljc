@@ -1,8 +1,9 @@
 (ns alphabase.hex-test
   (:require
-    [clojure.test :refer :all]
-    [alphabase.hex :as hex]
-    [alphabase.bytes :as b]))
+    #?(:clj [clojure.test :refer :all]
+       :cljs [cljs.test :refer-macros [deftest is testing]])
+    [alphabase.bytes :as b]
+    [alphabase.hex :as hex]))
 
 
 (deftest encoding-test
@@ -15,8 +16,8 @@
 
 
 (deftest decoding-test
-  (is (b/bytes= (b/byte-array 0) (hex/decode ""))
-      "empty string decodes as empty byte array")
+  (is (nil? (hex/decode ""))
+      "empty string decodes as nil")
   (is (b/bytes= (b/byte-array 1) (hex/decode "00"))
       "single zero char decodes as single zero byte"))
 
@@ -28,4 +29,4 @@
           decoded (hex/decode encoded)]
       (is (b/bytes= data decoded)
           (str "Hex coding is reflexive for "
-               (pr-str (seq data)))))))
+               (pr-str (b/byte-seq data)))))))

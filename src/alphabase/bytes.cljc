@@ -32,8 +32,9 @@
 (defn byte-seq
   "Return a sequence of the bytes in an array, after coercion."
   [array]
-  #?(:clj (map from-byte array)
-     :cljs (map #(aget array %) (range (alength array)))))
+  (when array
+    #?(:clj (map from-byte array)
+       :cljs (map #(aget array %) (range (alength array))))))
 
 
 (defn bytes=
