@@ -60,7 +60,7 @@
   nil if the input is nil or empty."
   [alphabet ^bytes data]
   {:pre [(string? alphabet) (< 1 (count alphabet))]}
-  (when-not (zero? (alength data))
+  (when (and data (not (zero? (alength data))))
     (let [zeroes (count (take-while zero? (bytes/byte-seq data)))]
       (->>
         (when (< zeroes (alength data))
