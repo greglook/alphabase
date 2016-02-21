@@ -6,20 +6,21 @@
 
 ;; ## Encoding
 
-(defn- bigint-divide
-  "Uses optimized big-integer division to calculate a sequence of tokens from a
-  byte array. Only works in Clojure!"
-  [^String alphabet ^bytes data]
-  ; Bigint math: ~67 µs
-  (let [base (count alphabet)]
-    (loop [n (bigint (BigInteger. 1 data))
-           tokens (list)]
-      (if (< n base)
-        (conj tokens (nth alphabet n))
-        (let [digit (mod n base)]
-          (recur
-            (/ (- n digit) base)
-            (conj tokens (nth alphabet digit))))))))
+#?(:clj
+   (defn- bigint-divide
+     "Uses optimized big-integer division to calculate a sequence of tokens
+     from a byte array. Only works in Clojure!"
+     [^String alphabet ^bytes data]
+     ; Bigint math: ~67 µs
+     (let [base (count alphabet)]
+       (loop [n (bigint (BigInteger. 1 data))
+              tokens (list)]
+         (if (< n base)
+           (conj tokens (nth alphabet n))
+           (let [digit (mod n base)]
+             (recur
+               (/ (- n digit) base)
+               (conj tokens (nth alphabet digit)))))))))
 
 
 (defn- pure-divide
@@ -73,34 +74,35 @@
 
 ;; ## Decoding
 
-(defn- bigint-multiply
-  "Uses optimized big-integer multiplication to decode a sequence of byte values
-  from a string of tokens. Only works in Clojure!"
-  [^String alphabet tokens]
-  ; Bigint math: ~74 µs
-  (->
-    (reverse tokens)
-    (->>
-      (map vector (iterate (partial * (count alphabet)) 1N))
-      ^clojure.lang.BigInt
-      (reduce
-        (fn read-token
-          [n [base token]]
-          (let [digit (.indexOf alphabet (str token))]
-            (when (neg? digit)
-              (throw (ex-info
-                       (str "Invalid token: " (pr-str token)
-                            " is not in alphabet " (pr-str alphabet)))))
-            (+ n (* (bigint digit) base))))
-        0N)
-      (.toBigInteger)
-      (.toByteArray))
-    (as-> data
-      (if (and (> (alength data) 1)
-               (zero? (aget data 0))
-               (neg? (aget data 1)))
-        (drop 1 data)
-        (seq data)))))
+#?(:clj
+   (defn- bigint-multiply
+     "Uses optimized big-integer multiplication to decode a sequence of byte
+     values from a string of tokens. Only works in Clojure!"
+     [^String alphabet tokens]
+     ; Bigint math: ~74 µs
+     (->
+       (reverse tokens)
+       (->>
+         (map vector (iterate (partial * (count alphabet)) 1N))
+         ^clojure.lang.BigInt
+         (reduce
+           (fn read-token
+             [n [base token]]
+             (let [digit (.indexOf alphabet (str token))]
+               (when (neg? digit)
+                 (throw (ex-info
+                          (str "Invalid token: " (pr-str token)
+                               " is not in alphabet " (pr-str alphabet)))))
+               (+ n (* (bigint digit) base))))
+           0N)
+         (.toBigInteger)
+         (.toByteArray))
+       (as-> data
+         (if (and (> (alength data) 1)
+                  (zero? (aget data 0))
+                  (neg? (aget data 1)))
+           (drop 1 data)
+           (seq data))))))
 
 
 (defn- pure-multiply

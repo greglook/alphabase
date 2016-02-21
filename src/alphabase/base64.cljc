@@ -15,7 +15,7 @@
   "Converts a byte array into a base64 string."
   ^String
   [data]
-  (throw (ex-info "Not Yet Implemented"))
+  (throw (ex-info "Not Yet Implemented" nil))
   (abc/encode alphabet data))
 
 
@@ -23,5 +23,5 @@
   "Decodes a base64 string into a byte array."
   ^bytes
   [tokens]
-  (throw (ex-info "Not Yet Implemented"))
+  (throw (ex-info "Not Yet Implemented" nil))
   (abc/decode alphabet tokens))
