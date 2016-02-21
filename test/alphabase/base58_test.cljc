@@ -1,6 +1,7 @@
 (ns alphabase.base58-test
   (:require
-    [clojure.test :refer :all]
+    #?(:clj [clojure.test :refer :all]
+       :cljs [cljs.test :refer-macros [deftest is testing]])
     [alphabase.base58 :as b58]
     [alphabase.bytes :as b]))
 
@@ -34,4 +35,4 @@
     (let [data (b/random-bytes 30)]
       (is (b/bytes= data (b58/decode (b58/encode data)))
           (str "Base58 coding is reflexive for "
-               (pr-str (seq data)))))))
+               (pr-str (b/byte-seq data)))))))
