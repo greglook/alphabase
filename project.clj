@@ -6,6 +6,18 @@
 
   :aliases {"node-repl" ["run" "-m" "clojure.main" "node_repl.clj"]}
 
+  :plugins
+  [[lein-cljsbuild "1.1.2"]
+   [lein-doo "0.1.6"]]
+
+  :cljsbuild
+  {:builds [{:id "test-nodejs"
+             :source-paths ["src" "test"]
+             :compiler {:output-to "target/cljs/tests-node.js"
+             :main alphabase.test-runner
+             :optimizations :none
+             :target :nodejs}}]}
+
   :codox
   {:metadata {:doc/format :markdown}
    :source-uri "https://github.com/greglook/alphabase/blob/master/{filepath}#L{line}"
