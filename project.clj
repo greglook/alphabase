@@ -11,13 +11,12 @@
    [lein-doo "0.1.6"]]
 
   :cljsbuild
-  {:builds [{:id "test-nodejs"
+  {:builds [{:id "test"
              :source-paths ["src" "test"]
              :compiler {:output-dir "target/cljs/out"
-                        :output-to "target/cljs/tests-node.js"
+                        :output-to "target/cljs/tests.js"
              :main alphabase.test-runner
-             :optimizations :none
-             :target :nodejs}}]}
+             :optimizations :none}}]}
 
   :codox
   {:metadata {:doc/format :markdown}

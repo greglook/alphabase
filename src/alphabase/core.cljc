@@ -122,7 +122,9 @@
               (throw (ex-info
                        (str "Invalid token " (pr-str token)
                             " is not in base-" base " alphabet "
-                            (pr-str alphabet)))))
+                            (pr-str alphabet))
+                       {:alphabet alphabet
+                        :token token})))
             (loop [bytev bytev
                    carry value
                    i 0]
