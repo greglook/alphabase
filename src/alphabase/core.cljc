@@ -120,9 +120,8 @@
           (let [value (.indexOf alphabet (str token))]
             (when (neg? value)
               (throw (ex-info
-                       (str "Invalid token " (pr-str token)
-                            " is not in base-" base " alphabet "
-                            (pr-str alphabet))
+                       (format "Invalid token %s is not in %s (%d) alphabet"
+                               (pr-str token) *ns* base)
                        {:alphabet alphabet
                         :token token})))
             (loop [bytev bytev
