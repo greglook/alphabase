@@ -4,7 +4,7 @@
   :license {:name "Public Domain"
             :url "http://unlicense.org/"}
 
-  :aliases {"node-repl" ["run" "-m" "clojure.main" "node_repl.clj"]}
+  :aliases {"cljs-repl" ["run" "-m" "clojure.main" "cljs_repl.clj"]}
 
   :plugins
   [[lein-cljsbuild "1.1.2"]
