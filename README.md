@@ -1,6 +1,9 @@
 alphabase
 =========
 
+[![Build Status](https://travis-ci.org/greglook/alphabase.svg?branch=develop)](https://travis-ci.org/greglook/alphabase)
+[![API codox](https://img.shields.io/badge/doc-API-blue.svg)](https://greglook.github.io/alphabase/api/)
+
 A simple cross-compiled Clojure(Script) library to handle encoding binary data
 in different bases using defined alphabets. If you've ever wanted a simple way
 to encode a byte array as hexadecimal or base58, this library is for you!
