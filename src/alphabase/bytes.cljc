@@ -32,8 +32,9 @@
 (defn byte-seq
   "Return a sequence of the bytes in an array, after coercion."
   [array]
-  #?(:clj (map from-byte array)
-     :cljs (map #(aget array %) (range (alength array)))))
+  (when array
+    #?(:clj (map from-byte array)
+       :cljs (map #(aget array %) (range (alength array))))))
 
 
 (defn bytes=
@@ -48,6 +49,24 @@
   [size]
   #?(:clj (clojure.core/byte-array size)
      :cljs (js/Uint8Array. (js/ArrayBuffer. size))))
+
+
+(defn copy
+  "Copies bytes from one array to another."
+  [src src-offset dst dst-offset length]
+  #?(:clj (System/arraycopy ^bytes src src-offset ^bytes dst dst-offset length)
+     :cljs (dotimes [i length]
+             (set-byte dst (+ i dst-offset) (get-byte src (+ i src-offset))))))
+
+
+(defn init-bytes
+  "Initialize a new array with the given sequence of byte values."
+  [values]
+  (let [size (count values)
+        data (byte-array size)]
+    (dotimes [i size]
+      (set-byte data i (nth values i)))
+    data))
 
 
 (defn random-bytes

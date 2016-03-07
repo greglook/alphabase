@@ -9,8 +9,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [0.2.0] - 2016-03-07
+
+### Added
+
+- Add cljs tests using `doo`.
+- `bytes/copy` provides a way to copy bytes from one array to another.
+- `bytes/init-bytes` to initialize an array with a seq of values.
+
+### Fixed
+
+- `bytes/byte-seq` returns nil for nil inputs.
+- `bigint-` functions are only emitted for `:clj`.
+- Pure division and multiplication functions are used as a default, rather than
+  just with `:cljs`.
+
 ## 0.1.0 - 2016-02-19
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/greglook/alphabase/compare/0.1.0...0.2.0
