@@ -1,9 +1,9 @@
 alphabase
 =========
 
-A simple Clojure(script) library to handle encoding binary data in different
-bases using defined alphabets. If you've ever wanted a simple way to encode a
-byte array as hexadecimal or base58, this library is for you!
+A simple cross-compiled Clojure(Script) library to handle encoding binary data
+in different bases using defined alphabets. If you've ever wanted a simple way
+to encode a byte array as hexadecimal or base58, this library is for you!
 
 ## Installation
 
@@ -36,8 +36,8 @@ For a REPL, you can use these:
 # Clojure REPL
 $ lein repl
 
-# ClojureScript REPL
-$ lein node-repl
+# ClojureScript REPL on NodeJS
+$ rlwrap lein cljs-repl
 ```
 
 ## License
