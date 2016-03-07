@@ -66,7 +66,7 @@
       (->>
         (when (< zeroes (alength data))
           #?(:clj (bigint-divide alphabet data)
-             :cljs (pure-divide alphabet data)))
+             :default (pure-divide alphabet data)))
         (concat (repeat zeroes (first alphabet)))
         (apply str)))))
 
@@ -120,8 +120,8 @@
           (let [value (.indexOf alphabet (str token))]
             (when (neg? value)
               (throw (ex-info
-                       (format "Invalid token %s is not in %s (%d) alphabet"
-                               (pr-str token) *ns* base)
+                       (str "Invalid token " (pr-str token) " is not in " *ns*
+                            " (" base ") alphabet")
                        {:alphabet alphabet
                         :token token})))
             (loop [bytev bytev
@@ -154,7 +154,7 @@
       (if (= zeroes (count tokens))
         (bytes/byte-array zeroes)
         (let [byte-seq #?(:clj (bigint-multiply alphabet tokens)
-                          :cljs (pure-multiply alphabet tokens))
+                          :default (pure-multiply alphabet tokens))
               data (bytes/byte-array (+ zeroes (count byte-seq)))]
           (dotimes [i (count byte-seq)]
             (bytes/set-byte data (+ zeroes i) (nth byte-seq i)))
