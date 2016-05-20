@@ -4,6 +4,8 @@
   :license {:name "Public Domain"
             :url "http://unlicense.org/"}
 
+  :deploy-branches ["master"]
+
   :aliases {"cljs-repl" ["run" "-m" "clojure.main" "cljs_repl.clj"]}
 
   :plugins
