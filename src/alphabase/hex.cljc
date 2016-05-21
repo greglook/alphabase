@@ -5,7 +5,7 @@
     [clojure.string :as str]))
 
 
-(defn- byte->hex
+(defn byte->hex
   "Converts a single byte value to a two-character hex string."
   [value]
   (let [hex #?(:clj (Integer/toHexString value)
@@ -15,7 +15,7 @@
       hex)))
 
 
-(defn- hex->byte
+(defn hex->byte
   "Converts a two-character hex string into a byte value."
   [hex]
   #?(:clj (Integer/parseInt hex 16)
