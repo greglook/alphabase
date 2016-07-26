@@ -27,20 +27,20 @@ The unit tests can be run using the following commands:
 
 ```sh
 # Clojure tests
-$ lein test
+lein test
 
 # ClojureScript tests on PhantomJS
-$ lein doo phantom test
+lein doo phantom test
 ```
 
 For a REPL, you can use these:
 
 ```sh
 # Clojure REPL
-$ lein repl
+lein repl
 
 # ClojureScript REPL on NodeJS
-$ rlwrap lein cljs-repl
+rlwrap lein cljs-repl
 ```
 
 ## License
