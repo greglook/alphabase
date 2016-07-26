@@ -1,6 +1,9 @@
 alphabase
 =========
 
+[![CircleCI](https://circleci.com/gh/greglook/alphabase.svg?style=shield&circle-token=f1e11fd825b2006adde3d1316e465abda50b453d)](https://circleci.com/gh/greglook/alphabase)
+[![API codox](https://img.shields.io/badge/doc-API-blue.svg)](https://greglook.github.io/alphabase/api/)
+
 A simple cross-compiled Clojure(Script) library to handle encoding binary data
 in different bases using defined alphabets. If you've ever wanted a simple way
 to encode a byte array as hexadecimal or base58, this library is for you!
@@ -24,20 +27,20 @@ The unit tests can be run using the following commands:
 
 ```sh
 # Clojure tests
-$ lein test
+lein test
 
 # ClojureScript tests on PhantomJS
-$ lein doo phantom test
+lein doo phantom test
 ```
 
 For a REPL, you can use these:
 
 ```sh
 # Clojure REPL
-$ lein repl
+lein repl
 
 # ClojureScript REPL on NodeJS
-$ rlwrap lein cljs-repl
+rlwrap lein cljs-repl
 ```
 
 ## License

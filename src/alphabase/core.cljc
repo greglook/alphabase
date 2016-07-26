@@ -92,7 +92,8 @@
                (when (neg? digit)
                  (throw (ex-info
                           (str "Invalid token: " (pr-str token)
-                               " is not in alphabet " (pr-str alphabet)))))
+                               " is not in alphabet " (pr-str alphabet))
+                          {:alphabet alphabet, :token token})))
                (+ n (* (bigint digit) base))))
            0N)
          (.toBigInteger)
@@ -122,8 +123,7 @@
               (throw (ex-info
                        (str "Invalid token " (pr-str token) " is not in " *ns*
                             " (" base ") alphabet")
-                       {:alphabet alphabet
-                        :token token})))
+                       {:alphabet alphabet, :token token})))
             (loop [bytev bytev
                    carry value
                    i 0]

@@ -1,8 +1,10 @@
-(defproject mvxcvi/alphabase "0.2.0"
+(defproject mvxcvi/alphabase "0.2.1"
   :description "Clojure(script) library to encode binary data with alphabet base strings."
   :url "https://github.com/greglook/alphabase"
   :license {:name "Public Domain"
             :url "http://unlicense.org/"}
+
+  :deploy-branches ["master"]
 
   :aliases {"cljs-repl" ["run" "-m" "clojure.main" "cljs_repl.clj"]}
 
