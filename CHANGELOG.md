@@ -7,7 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+### Added
+
+- Add `alphabase.multi` with limited [multibase](https://github.com/multiformats/multibase)
+  implementation using the existing hex and base58btc support.
 
 ## [0.2.1] - 2016-07-25
 

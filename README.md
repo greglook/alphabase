@@ -20,6 +20,8 @@ Leiningen, add the following dependency to your project definition:
 - `alphabase.bytes` namespace for generic byte-array handling
 - `alphabase.core` with arbitrary alphabet support
 - `alphabase.hex` and `alphabase.base58` with convenience wrappers
+- `alphabase.multi` provides a [multibase](https://github.com/multiformats/multibase)
+  implementation
 
 ## Testing
 
