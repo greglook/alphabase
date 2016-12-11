@@ -1,9 +1,8 @@
 (ns alphabase.multi
   "Multibase spec implementation."
   (:require
-    (alphabase
-      [hex :as hex]
-      [base58 :as base58])))
+    [alphabase.base58 :as base58]
+    [alphabase.hex :as hex]))
 
 
 (def base-codes
@@ -44,8 +43,8 @@
                base-codes)))
 
 
-(alter-var-root #'base->code memoize)
-(alter-var-root #'code->base memoize)
+#?(:clj (do (alter-var-root #'base->code memoize)
+            (alter-var-root #'code->base memoize)))
 
 
 (defn encoded-base
