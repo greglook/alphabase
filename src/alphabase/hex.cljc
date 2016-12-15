@@ -46,32 +46,29 @@
 
 
 (defn validate
-  "Checks a string to determine whether it's well-formed hexadecimal digest.
-  Returns an error message if the argument is invalid."
+  "Checks a string to determine whether it's well-formed hexadecimal. Returns
+  an error string if the argument is invalid."
   ^String
-  [digest]
+  [value]
   (cond
-    (not (string? digest))
-      (str "Value is not a string: " (pr-str digest))
+    (not (string? value))
+      (str "Value is not a string: " (pr-str value))
 
-    (not (re-matches #"^[0-9a-fA-F]*$" digest))
-      (str "String '" digest "' is not a valid digest: "
+    (not (re-matches #"^[0-9a-fA-F]*$" value))
+      (str "String '" value "' is not valid hex: "
            "contains illegal characters")
 
-    (< (count digest) 2)
-      (str "Digest must contain at least one byte")
+    (< (count value) 2)
+      (str "Hex string must contain at least one byte")
 
-    (> (count digest) 254)
-      (str "Digest exceeds maximum supported length of 127: " (/ (count digest) 2))
-
-    (odd? (count digest))
-      (str "String '" digest "' is not a valid digest: "
-           "number of characters (" (count digest) ") is odd")
+    (odd? (count value))
+      (str "String '" value "' is not valid hex: "
+           "number of characters (" (count value) ") is odd")
 
     :else nil))
 
 
 (defn valid?
   "Returns true if the string is valid hexadecimal."
-  [digest]
-  (nil? (validate digest)))
+  [value]
+  (nil? (validate value)))
