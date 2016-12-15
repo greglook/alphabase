@@ -27,8 +27,12 @@
   empty inputs."
   ^String
   [^bytes data]
-  (when (and data (pos? (alength data)))
-    (str/join (map byte->hex (bytes/byte-seq data)))))
+  #?(:clj (when-not (empty? data)
+            (->
+              (javax.xml.bind.DatatypeConverter/printHexBinary data)
+              (str/lower-case)))
+     :cljs (when (and data (pos? (alength data)))
+             (str/join (map byte->hex (bytes/byte-seq data))))))
 
 
 (defn decode
@@ -36,13 +40,17 @@
   array is zero-padded to match the hex string length."
   ^bytes
   [^String data]
-  (when-not (empty? data)
-    (let [length (/ (count data) 2)
-          array (bytes/byte-array length)]
-      (dotimes [i length]
-        (let [hex (subs data (* 2 i) (* 2 (inc i)))]
-          (bytes/set-byte array i (hex->byte hex))))
-      array)))
+  #?(:clj (when-not (empty? data)
+            (if (= data "00")
+              (byte-array 1)
+              (javax.xml.bind.DatatypeConverter/parseHexBinary data)))
+     :cljs (when-not (empty? data)
+             (let [length (/ (count data) 2)
+                   array (bytes/byte-array length)]
+               (dotimes [i length]
+                 (let [hex (subs data (* 2 i) (* 2 (inc i)))]
+                   (bytes/set-byte array i (hex->byte hex))))
+               array))))
 
 
 (defn validate
