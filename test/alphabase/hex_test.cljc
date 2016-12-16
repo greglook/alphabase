@@ -30,3 +30,18 @@
       (is (b/bytes= data decoded)
           (str "Hex coding is reflexive for "
                (pr-str (b/byte-seq data)))))))
+
+
+(deftest hex-validation
+  (testing "validation errors"
+    (is (re-seq #"not a string" (hex/validate 123)))
+    (is (re-seq #"contains illegal characters" (hex/validate "012xabc")))
+    (is (re-seq #"must contain at least one byte" (hex/validate "0")))
+    (is (re-seq #"number of characters .+ is odd" (hex/validate "012ab")))
+    (is (nil? (hex/validate "012abc"))))
+  (testing "validation predicate"
+    (is (false? (hex/valid? 123)))
+    (is (false? (hex/valid? "012xabc")))
+    (is (false? (hex/valid? "0")))
+    (is (false? (hex/valid? "012ab")))
+    (is (true? (hex/valid? "012abc")))))
