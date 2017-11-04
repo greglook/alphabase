@@ -3,6 +3,7 @@ alphabase
 
 [![CircleCI](https://circleci.com/gh/greglook/alphabase.svg?style=shield&circle-token=f1e11fd825b2006adde3d1316e465abda50b453d)](https://circleci.com/gh/greglook/alphabase)
 [![API codox](https://img.shields.io/badge/doc-API-blue.svg)](https://greglook.github.io/alphabase/api/)
+[![marginalia docs](https://img.shields.io/badge/doc-marginalia-blue.svg)](https://greglook.github.io/alphabase/marginalia/uberdoc.html)
 
 A simple cross-compiled Clojure(Script) library to handle encoding binary data
 in different bases using defined alphabets. If you've ever wanted a simple way
