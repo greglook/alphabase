@@ -9,6 +9,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [1.0.0] - 2017-11-04
+
+This project has been stable for a while now, so bumping the version to 1.0.0.
+
+### Changed
+- Update various dependencies.
+- Migrate to CircleCI 2.0.
+
 ## [0.2.2] - 2016-12-15
 
 ### Added
@@ -41,7 +49,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/0.2.2...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/greglook/alphabase/compare/0.2.2...1.0.0
 [0.2.2]: https://github.com/greglook/alphabase/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/greglook/alphabase/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/greglook/alphabase/compare/0.1.0...0.2.0
