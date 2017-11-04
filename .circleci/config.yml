@@ -6,6 +6,8 @@ jobs:
     docker:
       - image: circleci/clojure:lein-2.7.1
     steps:
+      - run: sudo apt-get update && sudo apt-get install -y phantomjs
+      - run: phantomjs -v
       - checkout
       - restore_cache:
           keys:
