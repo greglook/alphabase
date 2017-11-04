@@ -13,6 +13,7 @@ jobs:
             - alphabase-
       - run: lein deps
       - save_cache:
+          key: alphabase-{{ checksum "project.clj" }}
           paths:
             - ~/.m2
       - run: lein check
