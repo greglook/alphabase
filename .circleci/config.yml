@@ -5,6 +5,8 @@ jobs:
     working_directory: ~/alphabase
     docker:
       - image: circleci/clojure:lein-2.7.1
+    environment:
+      QT_QPA_PLATFORM: offscreen
     steps:
       - run: sudo apt-get update && sudo apt-get install -y phantomjs
       - checkout
