@@ -8,6 +8,7 @@ A simple cross-compiled Clojure(Script) library to handle encoding binary data
 in different bases using defined alphabets. If you've ever wanted a simple way
 to encode a byte array as hexadecimal or base58, this library is for you!
 
+
 ## Installation
 
 Library releases are published on Clojars. To use the latest version with
@@ -15,13 +16,13 @@ Leiningen, add the following dependency to your project definition:
 
 [![Clojars Project](http://clojars.org/mvxcvi/alphabase/latest-version.svg)](http://clojars.org/mvxcvi/alphabase)
 
+
 ## Usage
 
 - `alphabase.bytes` namespace for generic byte-array handling
 - `alphabase.core` with arbitrary alphabet support
 - `alphabase.hex` and `alphabase.base58` with convenience wrappers
-- `alphabase.multi` provides a [multibase](https://github.com/multiformats/multibase)
-  implementation
+
 
 ## Testing
 
@@ -29,10 +30,10 @@ The unit tests can be run using the following commands:
 
 ```sh
 # Clojure tests
-lein test
+lein clj:test
 
-# ClojureScript tests on PhantomJS
-lein doo phantom test
+# ClojureScript tests on Rhino
+lein cljs:test
 ```
 
 For a REPL, you can use these:
@@ -41,9 +42,10 @@ For a REPL, you can use these:
 # Clojure REPL
 lein repl
 
-# ClojureScript REPL on NodeJS
-rlwrap lein cljs-repl
+# ClojureScript REPL on Rhino
+rlwrap lein cljs:repl
 ```
+
 
 ## License
 

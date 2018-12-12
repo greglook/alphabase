@@ -2,23 +2,22 @@ version: 2
 
 jobs:
   build:
-    working_directory: ~/alphabase
+    working_directory: ~/code
     docker:
-      - image: circleci/clojure:lein-2.7.1
+      - image: circleci/clojure:lein-2.8.1
     environment:
       QT_QPA_PLATFORM: offscreen
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y phantomjs
+      - run: sudo apt-get update && sudo apt-get install -y rhino phantomjs
       - checkout
       - restore_cache:
           keys:
-            - alphabase-{{ checksum "project.clj" }}
-            - alphabase-
+            - v1-{{ checksum "project.clj" }}
+            - v1-
       - run: lein deps
+      - run: lein clj:test
+      - run: lein cljs:test
       - save_cache:
-          key: alphabase-{{ checksum "project.clj" }}
+          key: v1-{{ checksum "project.clj" }}
           paths:
             - ~/.m2
-      - run: lein check
-      - run: lein test
-      - run: lein doo phantom test once

@@ -9,6 +9,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [2.0.0] - 2018-12-12
+
+Note that this is a major release because of the removal of multibase support
+from alphabase.
+
+### Added
+- Added two new arities to `alphabase.bytes/copy` which simplify full cloning of
+  a byte array and a full source write to an offset in dest.
+- `alphabase.bytes/compare` offers a lexicographic comparator for byte arrays.
+
+### Removed
+- **BREAKING:** Removed `alphabase.multi` in favor of a unified
+  [`multiformats`](//github.com/greglook/clj-multiformats) codebase.
+
+### Changed
+- Removed `javax.xml.bind.DatatypeConverter` optimization for `:clj` in the hex
+  namespace for Java 9+ compatibility.
+  [#4](//github.com/greglook/alphabase/issues/4)
+
 ## [1.0.0] - 2017-11-04
 
 This project has been stable for a while now, so bumping the version to 1.0.0.
@@ -49,7 +68,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/greglook/alphabase/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/greglook/alphabase/compare/0.2.2...1.0.0
 [0.2.2]: https://github.com/greglook/alphabase/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/greglook/alphabase/compare/0.2.0...0.2.1
