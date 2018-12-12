@@ -11,6 +11,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added two new arities to `alphabase.bytes/copy` which simplify full cloning of
   a byte array and a full source write to an offset in dest.
 
+### Removed
+- **BREAKING:** Removed `alphabase.multi` in favor of a unified
+  [`multiformats`](//github.com/greglook/clj-multiformats) codebase.
+
 ### Changed
 - Removed `javax.xml.bind.DatatypeConverter` optimization for `:clj` in the hex
   namespace for Java 9+ compatibility.
