@@ -5,10 +5,21 @@
     [alphabase.bytes :as b]))
 
 
-(deftest bytes-predicate
-  (is (not (b/bytes? nil)))
-  (is (not (b/bytes? "foo")))
-  (is (b/bytes? (b/byte-array 1))))
+(deftest bytes-tests
+  (testing "bytes?"
+    (is (not (b/bytes? nil)))
+    (is (not (b/bytes? "foo")))
+    (is (b/bytes? (b/byte-array 0)))
+    (is (b/bytes? (b/byte-array 1))))
+  (testing "bytes="
+    (is (not (b/bytes= "foo" (b/init-bytes [0 1 2]))))
+    (is (not (b/bytes= (b/init-bytes [0 1 2]) nil)))
+    (is (not (b/bytes= (b/init-bytes [0 1 2])
+                       (b/init-bytes [0 1 2 0]))))
+    (is (not (b/bytes= (b/init-bytes [0 1 2])
+                       (b/init-bytes [0 1 3]))))
+    (is (b/bytes= (b/init-bytes [0 1 2])
+                  (b/init-bytes [0 1 2])))))
 
 
 (deftest array-manipulation

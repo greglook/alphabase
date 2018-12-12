@@ -44,14 +44,22 @@
      :cljs
      (or (instance? js/Uint8Array x)
          (and (instance? js/Array x)
-              (integer? (first x))))))
+              (or (empty? x)
+                  (integer? (first x)))))))
 
 
 (defn bytes=
   "Returns true if two byte sequences are the same length and have the same
   byte content."
   [a b]
-  (= (byte-seq a) (byte-seq b)))
+  (and (bytes? a) (bytes? b)
+       (= (alength a) (alength b))
+       (loop [i 0]
+         (if (< i (alength a))
+           (if (= (get-byte a i) (get-byte b i))
+             (recur (inc i))
+             false)
+           true))))
 
 
 (defn byte-array
