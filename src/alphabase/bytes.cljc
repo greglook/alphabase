@@ -1,6 +1,6 @@
 (ns alphabase.bytes
   "Functions to generically handle byte arrays."
-  (:refer-clojure :exclude [byte-array]))
+  (:refer-clojure :exclude [byte-array compare]))
 
 
 (defn to-byte
@@ -92,3 +92,28 @@
        :cljs (dotimes [i length]
                (set-byte data i (rand-int 256))))
     data))
+
+
+(defn compare
+  "Lexicographically compares two byte-arrays for order. Returns a negative
+  number, zero, or a positive number if `a` is less than, equal to, or greater
+  than `b`, respectively.
+
+  This ranking compares each byte in the keys in order; the first byte which
+  differs determines the ordering; if the byte in `a` is less than the byte in
+  `b`, `a` ranks before `b`, and vice versa.
+
+  If the keys differ in length, and all the bytes in the shorter key match the
+  longer key, the shorter key ranks first."
+  [^bytes a ^bytes b]
+  (let [prefix-len (min (alength a) (alength b))]
+    (loop [i 0]
+      (if (< i prefix-len)
+        ; Compare next byte in sequence
+        (let [ai (get-byte a i)
+              bi (get-byte b i)]
+          (if (= ai bi)
+            (recur (inc i))
+            (- ai bi)))
+        ; Reached the end of the shorter key, compare lengths.
+        (- (alength a) (alength b))))))

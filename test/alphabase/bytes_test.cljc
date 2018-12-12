@@ -32,3 +32,24 @@
           b (b/init-bytes [100 110 120 130 140 150])]
       (b/copy a 3 b 2 3)
       (is (b/bytes= (b/init-bytes [100 110 4 5 6 150]) b)))))
+
+
+(deftest array-sorting
+  (is (zero? (b/compare
+               (b/init-bytes [])
+               (b/init-bytes []))))
+  (is (zero? (b/compare
+               (b/init-bytes [0 1 2])
+               (b/init-bytes [0 1 2]))))
+  (is (neg? (b/compare
+              (b/init-bytes [0 1 2])
+              (b/init-bytes [0 1 3]))))
+  (is (pos? (b/compare
+              (b/init-bytes [0 2 2])
+              (b/init-bytes [0 1 3]))))
+  (is (pos? (b/compare
+              (b/init-bytes [0 1 2 0])
+              (b/init-bytes [0 1 2]))))
+  (is (neg? (b/compare
+              (b/init-bytes [0 1 2 0])
+              (b/init-bytes [0 1 2 0 0])))))

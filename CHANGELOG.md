@@ -17,6 +17,7 @@ from alphabase.
 ### Added
 - Added two new arities to `alphabase.bytes/copy` which simplify full cloning of
   a byte array and a full source write to an offset in dest.
+- `alphabase.bytes/compare` offers a lexicographic comparator for byte arrays.
 
 ### Removed
 - **BREAKING:** Removed `alphabase.multi` in favor of a unified
