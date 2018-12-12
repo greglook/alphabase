@@ -7,6 +7,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+...
+
+## [2.0.0] - 2018-12-12
+
+Note that this is a major release because of the removal of multibase support
+from alphabase.
+
 ### Added
 - Added two new arities to `alphabase.bytes/copy` which simplify full cloning of
   a byte array and a full source write to an offset in dest.
@@ -60,7 +67,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/greglook/alphabase/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/greglook/alphabase/compare/0.2.2...1.0.0
 [0.2.2]: https://github.com/greglook/alphabase/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/greglook/alphabase/compare/0.2.0...0.2.1
