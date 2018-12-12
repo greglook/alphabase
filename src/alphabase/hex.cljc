@@ -27,12 +27,11 @@
   empty inputs."
   ^String
   [^bytes data]
-  #?(:clj (when-not (empty? data)
-            (->
-              (javax.xml.bind.DatatypeConverter/printHexBinary data)
-              (str/lower-case)))
-     :cljs (when (and data (pos? (alength data)))
-             (str/join (map byte->hex (bytes/byte-seq data))))))
+  (when (and data (pos? (alength data)))
+    (->> (bytes/byte-seq data)
+         (map byte->hex)
+         (str/join)
+         (str/lower-case))))
 
 
 (defn decode

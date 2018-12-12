@@ -7,7 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+### Changed
+- Removed `javax.xml.bind.DatatypeConverter` optimization for `:clj` in the hex
+  namespace for Java 9+ compatibility.
+  [#4](//github.com/greglook/alphabase/issues/4)
 
 ## [1.0.0] - 2017-11-04
 
