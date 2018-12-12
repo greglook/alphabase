@@ -54,11 +54,11 @@
 (defn copy
   "Copies bytes from one array to another."
   ([src]
-   (let [dst (byte-array (alength src))]
+   (let [dst (byte-array (alength ^bytes src))]
      (copy src dst 0)
      dst))
   ([src dst dst-offset]
-   (copy src 0 dst dst-offset (alength src)))
+   (copy src 0 dst dst-offset (alength ^bytes src)))
   ([src src-offset dst dst-offset length]
    #?(:clj (System/arraycopy ^bytes src src-offset ^bytes dst dst-offset length)
       :cljs (dotimes [i length]
