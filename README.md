@@ -30,10 +30,10 @@ The unit tests can be run using the following commands:
 
 ```sh
 # Clojure tests
-lein test
+lein clj:test
 
-# ClojureScript tests on PhantomJS
-lein doo phantom test
+# ClojureScript tests on Rhino
+lein cljs:test
 ```
 
 For a REPL, you can use these:
@@ -42,8 +42,8 @@ For a REPL, you can use these:
 # Clojure REPL
 lein repl
 
-# ClojureScript REPL on NodeJS
-rlwrap lein cljs-repl
+# ClojureScript REPL on Rhino
+rlwrap lein cljs:repl
 ```
 
 

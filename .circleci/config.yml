@@ -15,9 +15,8 @@ jobs:
             - v1-{{ checksum "project.clj" }}
             - v1-
       - run: lein deps
-      - run: lein check
-      - run: lein test
-      - run: lein doo rhino test once
+      - run: lein clj:test
+      - run: lein cljs:test
       - save_cache:
           key: v1-{{ checksum "project.clj" }}
           paths:
