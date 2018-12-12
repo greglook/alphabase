@@ -1,6 +1,6 @@
 (ns alphabase.bytes
   "Functions to generically handle byte arrays."
-  (:refer-clojure :exclude [byte-array compare]))
+  (:refer-clojure :exclude [bytes? byte-array compare]))
 
 
 (defn to-byte
@@ -35,6 +35,16 @@
   (when array
     #?(:clj (map from-byte array)
        :cljs (map #(aget array %) (range (alength array))))))
+
+
+(defn bytes?
+  "True if the argument is a byte array compatible with this library."
+  [x]
+  #?(:clj (clojure.core/bytes? x)
+     :cljs
+     (or (instance? js/Uint8Array x)
+         (and (instance? js/Array x)
+              (integer? (first x))))))
 
 
 (defn bytes=

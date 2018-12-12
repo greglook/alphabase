@@ -5,6 +5,12 @@
     [alphabase.bytes :as b]))
 
 
+(deftest bytes-predicate
+  (is (not (b/bytes? nil)))
+  (is (not (b/bytes? "foo")))
+  (is (b/bytes? (b/byte-array 1))))
+
+
 (deftest array-manipulation
   (let [bs (b/byte-array 3)]
     (is (= 0 (b/get-byte bs 0)))
@@ -20,6 +26,7 @@
   (testing "full copy"
     (let [a (b/init-bytes [0 1 2 3 4])
           b (b/copy a)]
+      (is (b/bytes? b))
       (is (not (identical? a b)))
       (is (b/bytes= a b))))
   (testing "full write"
