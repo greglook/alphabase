@@ -32,12 +32,12 @@
   (testing "full write"
     (let [a (b/init-bytes [0 1 2 3])
           b (b/init-bytes [100 110 120 130 140 150 160])]
-      (b/copy a b 2)
+      (is (= 4 (b/copy a b 2)))
       (is (b/bytes= (b/init-bytes [100 110 0 1 2 3 160]) b))))
   (testing "slice write"
     (let [a (b/init-bytes [1 2 3 4 5 6 7 8 9 10])
           b (b/init-bytes [100 110 120 130 140 150])]
-      (b/copy a 3 b 2 3)
+      (is (= 3 (b/copy a 3 b 2 3)))
       (is (b/bytes= (b/init-bytes [100 110 4 5 6 150]) b)))))
 
 

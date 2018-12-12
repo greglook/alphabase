@@ -7,7 +7,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+### Added
+- `alphabase.bytes/bytes?` provides a cross-platform test for byte data.
+
+### Changed
+- `alphabase.bytes/copy` returns the number of bytes copied in the
+  multi-argument arities.
 
 ## [2.0.0] - 2018-12-12
 
