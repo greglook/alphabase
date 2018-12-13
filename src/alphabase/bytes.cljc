@@ -1,6 +1,6 @@
 (ns alphabase.bytes
   "Functions to generically handle byte arrays."
-  (:refer-clojure :exclude [byte-array compare]))
+  (:refer-clojure :exclude [bytes? byte-array compare]))
 
 
 (defn to-byte
@@ -37,11 +37,29 @@
        :cljs (map #(aget array %) (range (alength array))))))
 
 
+(defn bytes?
+  "True if the argument is a byte array compatible with this library."
+  [x]
+  #?(:clj (clojure.core/bytes? x)
+     :cljs
+     (or (instance? js/Uint8Array x)
+         (and (instance? js/Array x)
+              (or (empty? x)
+                  (integer? (first x)))))))
+
+
 (defn bytes=
   "Returns true if two byte sequences are the same length and have the same
   byte content."
   [a b]
-  (= (byte-seq a) (byte-seq b)))
+  (and (bytes? a) (bytes? b)
+       (= (alength a) (alength b))
+       (loop [i 0]
+         (if (< i (alength a))
+           (if (= (get-byte a i) (get-byte b i))
+             (recur (inc i))
+             false)
+           true))))
 
 
 (defn byte-array
@@ -55,21 +73,24 @@
 (defn copy
   "Copies bytes from one array to another.
 
-  - If only a source is given, the result is a fully copied byte array.
+  - If only a source is given, returns a full copy of the byte array.
   - If a source and a destination with offset are given, copies all of the
-    bytes from the source into the destination at that offset.
+    bytes from the source into the destination at that offset. Returns the
+    number of bytes copied.
   - If all arguments are given, copies `length` bytes from the source at the
-    given offset to the destination at its offset."
-  ([src]
-   (let [dst (byte-array (alength ^bytes src))]
+    given offset to the destination at its offset. Returns the number of bytes
+    copied."
+  ([^bytes src]
+   (let [dst (byte-array (alength src))]
      (copy src dst 0)
      dst))
-  ([src dst dst-offset]
-   (copy src 0 dst dst-offset (alength ^bytes src)))
-  ([src src-offset dst dst-offset length]
-   #?(:clj (System/arraycopy ^bytes src src-offset ^bytes dst dst-offset length)
+  ([^bytes src dst dst-offset]
+   (copy src 0 dst dst-offset (alength src)))
+  ([^bytes src src-offset ^bytes dst dst-offset length]
+   #?(:clj (System/arraycopy src src-offset dst dst-offset length)
       :cljs (dotimes [i length]
-              (set-byte dst (+ i dst-offset) (get-byte src (+ i src-offset)))))))
+              (set-byte dst (+ i dst-offset) (get-byte src (+ i src-offset)))))
+   length))
 
 
 (defn init-bytes

@@ -5,6 +5,23 @@
     [alphabase.bytes :as b]))
 
 
+(deftest bytes-tests
+  (testing "bytes?"
+    (is (not (b/bytes? nil)))
+    (is (not (b/bytes? "foo")))
+    (is (b/bytes? (b/byte-array 0)))
+    (is (b/bytes? (b/byte-array 1))))
+  (testing "bytes="
+    (is (not (b/bytes= "foo" (b/init-bytes [0 1 2]))))
+    (is (not (b/bytes= (b/init-bytes [0 1 2]) nil)))
+    (is (not (b/bytes= (b/init-bytes [0 1 2])
+                       (b/init-bytes [0 1 2 0]))))
+    (is (not (b/bytes= (b/init-bytes [0 1 2])
+                       (b/init-bytes [0 1 3]))))
+    (is (b/bytes= (b/init-bytes [0 1 2])
+                  (b/init-bytes [0 1 2])))))
+
+
 (deftest array-manipulation
   (let [bs (b/byte-array 3)]
     (is (= 0 (b/get-byte bs 0)))
@@ -20,17 +37,18 @@
   (testing "full copy"
     (let [a (b/init-bytes [0 1 2 3 4])
           b (b/copy a)]
+      (is (b/bytes? b))
       (is (not (identical? a b)))
       (is (b/bytes= a b))))
   (testing "full write"
     (let [a (b/init-bytes [0 1 2 3])
           b (b/init-bytes [100 110 120 130 140 150 160])]
-      (b/copy a b 2)
+      (is (= 4 (b/copy a b 2)))
       (is (b/bytes= (b/init-bytes [100 110 0 1 2 3 160]) b))))
   (testing "slice write"
     (let [a (b/init-bytes [1 2 3 4 5 6 7 8 9 10])
           b (b/init-bytes [100 110 120 130 140 150])]
-      (b/copy a 3 b 2 3)
+      (is (= 3 (b/copy a 3 b 2 3)))
       (is (b/bytes= (b/init-bytes [100 110 4 5 6 150]) b)))))
 
 
