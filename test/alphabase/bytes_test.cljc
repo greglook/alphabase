@@ -1,7 +1,7 @@
 (ns alphabase.bytes-test
   (:require
     #?(:clj [clojure.test :refer :all]
-       :cljs [cljs.test :refer-macros [deftest is testing]])
+       :cljs [cljs.test :refer-macros [deftest is are testing]])
     [alphabase.bytes :as b]))
 
 
@@ -71,3 +71,29 @@
   (is (neg? (b/compare
               (b/init-bytes [0 1 2 0])
               (b/init-bytes [0 1 2 0 0])))))
+
+(deftest copy-slice
+  (are [bs offset len]
+    (b/bytes= (b/init-bytes (take len (drop offset bs)))
+             (-> bs b/init-bytes (b/copy-slice offset len)))
+    [1 2 3 4 5 6 7 8 9 10] 5 3
+    [0 1 2 0] 0 2
+    [0 1 2 0] 0 0
+    [0 1 2 0] 2 1)
+  (are [bs offset]
+      (= (drop offset bs)
+         (-> bs b/init-bytes (b/copy-slice offset) b/byte-seq))
+    [1 2 3 4 5 6 7 8 9 10] 5
+    [0 1 2 0] 0
+    [0 1 2 0] 0
+    [0 1 2 0] 2))
+
+
+(deftest concat-arrs
+  (are [arrs expected]
+    (b/bytes= (b/init-bytes expected)
+              (->> arrs (map b/init-bytes) (apply b/concat-bytes)))
+    [[0 1] [2 3] [3 4]] [0 1 2 3 3 4]
+    [[0 1]] [0 1]
+    [[0 1] [0 1 2]] [0 1 0 1 2]
+    [[]] []))
