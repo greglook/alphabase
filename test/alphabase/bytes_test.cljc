@@ -92,7 +92,7 @@
 (deftest concat-arrs
   (are [arrs expected]
     (b/bytes= (b/init-bytes expected)
-              (->> arrs (map b/init-bytes) (apply b/concat-bytes)))
+              (->> arrs (map b/init-bytes) (apply b/concat)))
     [[0 1] [2 3] [3 4]] [0 1 2 3 3 4]
     [[0 1]] [0 1]
     [[0 1] [0 1 2]] [0 1 0 1 2]

@@ -1,6 +1,6 @@
 (ns alphabase.bytes
   "Functions to generically handle byte arrays."
-  (:refer-clojure :exclude [bytes? byte-array compare]))
+  (:refer-clojure :exclude [bytes? byte-array compare concat]))
 
 
 (defn to-byte
@@ -153,7 +153,7 @@
    (copy-slice src offset (- (alength ^bytes src) offset))))
 
 
-(defn concat-bytes
+(defn concat
   "Concatenate bytes arrays into a single new byte array."
   [& arrs]
   (let [total-len (reduce + (map #(alength ^bytes %) arrs))
