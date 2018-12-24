@@ -9,6 +9,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [2.0.2] - 2018-12-24
+
+### Added
+- `alphabase.bytes/copy-slice` returns a copy of a sequence of bytes inside a
+  source array.
+- `alphabase.bytes/concat` returns a byte array which is the concatenation of
+  the arrays given as arguments.
+
 ## [2.0.1] - 2018-12-12
 
 Note that this is a major release because of the removal of multibase support
@@ -71,7 +79,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.1...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.2...HEAD
+[2.0.2]: https://github.com/greglook/alphabase/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/greglook/alphabase/compare/1.0.0...2.0.1
 [1.0.0]: https://github.com/greglook/alphabase/compare/0.2.2...1.0.0
 [0.2.2]: https://github.com/greglook/alphabase/compare/0.2.1...0.2.2
