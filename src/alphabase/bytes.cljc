@@ -1,6 +1,6 @@
 (ns alphabase.bytes
   "Functions to generically handle byte arrays."
-  (:refer-clojure :exclude [bytes? byte-array compare]))
+  (:refer-clojure :exclude [bytes? byte-array compare concat]))
 
 
 (defn to-byte
@@ -138,3 +138,32 @@
             (- ai bi)))
         ; Reached the end of the shorter key, compare lengths.
         (- (alength a) (alength b))))))
+
+
+(defn copy-slice
+  "Copy a slice (defined by offset, length) from a byte array.
+
+  Omitting the slice `len` argument will copy remainder of
+  `src` array from offset (e.g, `(- (alength src) offset)` bytes)."
+  ^bytes
+  ([^bytes src offset len]
+   (let [dst (byte-array len)]
+     (copy src offset dst 0 len)
+     dst))
+  ^bytes
+  ([^bytes src offset]
+   (copy-slice src offset (- (alength src) offset))))
+
+
+(defn concat
+  "Concatenate bytes arrays into a single new byte array."
+  ^bytes
+  [& arrs]
+  (let [arrs (remove nil? arrs)
+        total-len (reduce + (map #(alength ^bytes %) arrs))
+        dst (byte-array total-len)]
+    (loop [arrs arrs offset 0]
+      (when-let [src (first arrs)]
+        (copy src 0 dst offset (alength ^bytes src))
+        (recur (rest arrs) (+ offset (alength src)))))
+    dst))
