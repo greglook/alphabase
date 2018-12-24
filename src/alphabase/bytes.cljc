@@ -145,18 +145,22 @@
 
   Omitting the slice `len` argument will copy remainder of
   `src` array from offset (e.g, `(- (alength src) offset)` bytes)."
-  (^bytes [^bytes src offset len]
+  ^bytes
+  ([^bytes src offset len]
    (let [dst (byte-array len)]
      (copy src offset dst 0 len)
      dst))
-  (^bytes [src offset]
-   (copy-slice src offset (- (alength ^bytes src) offset))))
+  ^bytes
+  ([^bytes src offset]
+   (copy-slice src offset (- (alength src) offset))))
 
 
 (defn concat
   "Concatenate bytes arrays into a single new byte array."
+  ^bytes
   [& arrs]
-  (let [total-len (reduce + (map #(alength ^bytes %) arrs))
+  (let [arrs (remove nil? arrs)
+        total-len (reduce + (map #(alength ^bytes %) arrs))
         dst (byte-array total-len)]
     (loop [arrs arrs offset 0]
       (when-let [src (first arrs)]
