@@ -52,14 +52,18 @@
   "Returns true if two byte sequences are the same length and have the same
   byte content."
   [a b]
-  (and (bytes? a) (bytes? b)
-       (= (alength a) (alength b))
-       (loop [i 0]
-         (if (< i (alength a))
-           (if (= (get-byte a i) (get-byte b i))
-             (recur (inc i))
-             false)
-           true))))
+  (and
+    (bytes? a) (bytes? b)
+    (let [^bytes a a
+          ^bytes b b]
+      (and
+        (= (alength a) (alength b))
+        (loop [i 0]
+          (if (< i (alength a))
+            (if (= (get-byte a i) (get-byte b i))
+              (recur (inc i))
+              false)
+            true))))))
 
 
 (defn byte-array
@@ -162,8 +166,9 @@
   (let [arrs (remove nil? arrs)
         total-len (reduce + (map #(alength ^bytes %) arrs))
         dst (byte-array total-len)]
-    (loop [arrs arrs offset 0]
-      (when-let [src (first arrs)]
-        (copy src 0 dst offset (alength ^bytes src))
+    (loop [arrs arrs
+           offset 0]
+      (when-let [^bytes src (first arrs)]
+        (copy src 0 dst offset (alength src))
         (recur (rest arrs) (+ offset (alength src)))))
     dst))
