@@ -9,6 +9,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [2.0.3] - 2019-01-20
+
+### Fixed
+- Fixed a few reflection warnings in `alphabase.bytes`.
+
 ## [2.0.2] - 2018-12-24
 
 ### Added
@@ -79,7 +84,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.2...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.3...HEAD
+[2.0.3]: https://github.com/greglook/alphabase/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/greglook/alphabase/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/greglook/alphabase/compare/1.0.0...2.0.1
 [1.0.0]: https://github.com/greglook/alphabase/compare/0.2.2...1.0.0
