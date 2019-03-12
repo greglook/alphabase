@@ -39,17 +39,10 @@
   array is zero-padded to match the hex string length."
   ^bytes
   [^String data]
-  #?(:clj (when-not (empty? data)
-            (if (= data "00")
-              (byte-array 1)
-              (javax.xml.bind.DatatypeConverter/parseHexBinary data)))
-     :cljs (when-not (empty? data)
-             (let [length (/ (count data) 2)
-                   array (bytes/byte-array length)]
-               (dotimes [i length]
-                 (let [hex (subs data (* 2 i) (* 2 (inc i)))]
-                   (bytes/set-byte array i (hex->byte hex))))
-               array))))
+  (when-not (empty? data)
+    (->> (partition 2 data)
+         (map #(hex->byte (apply str %)))
+         (bytes/init-bytes))))
 
 
 (defn validate
