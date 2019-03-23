@@ -9,6 +9,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [2.0.4] - 2019-03-23
+
+### Fixed
+- Remove reference to `javax.xml.bind.DatatypeConverter` in the `alphabase.hex`
+  namespace for compatibility with Java 11, which moves that class to a separate
+  module.
+
 ## [2.0.3] - 2019-01-20
 
 ### Fixed
@@ -84,7 +91,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.3...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.4...HEAD
+[2.0.4]: https://github.com/greglook/alphabase/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/greglook/alphabase/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/greglook/alphabase/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/greglook/alphabase/compare/1.0.0...2.0.1

@@ -1,4 +1,4 @@
-(defproject mvxcvi/alphabase "2.0.3"
+(defproject mvxcvi/alphabase "2.0.4"
   :description "Clojure(script) library to encode binary data with alphabet base strings."
   :url "https://github.com/greglook/alphabase"
   :license {:name "Public Domain"
@@ -10,7 +10,8 @@
   {"clj:test" ["do" ["check"] ["test"]]
    "cljs:check" ["with-profile" "+doo" "cljsbuild" "once"]
    "cljs:repl" ["run" "-m" "clojure.main" "dev/cljs_repl.clj"]
-   "cljs:test" ["doo" "rhino" "test" "once"]}
+   "cljs:test" ["doo" "rhino" "test" "once"]
+   "coverage" ["with-profile" "+coverage" "cloverage"]}
 
   :plugins
   [[lein-cljsbuild "1.1.7"]
@@ -38,4 +39,9 @@
 
    :doo
    {:dependencies
-    [[doo "0.1.11"]]}})
+    [[doo "0.1.11"]]}
+
+   :coverage
+   {:plugins
+    [[org.clojure/clojure "1.10.0"]
+     [lein-cloverage "1.1.0"]]}})
