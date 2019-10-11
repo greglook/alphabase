@@ -11,7 +11,7 @@
    "cljs:check" ["with-profile" "+doo" "cljsbuild" "once"]
    "cljs:repl" ["run" "-m" "clojure.main" "dev/cljs_repl.clj"]
    "cljs:test" ["doo" "rhino" "test" "once"]
-   "coverage" ["with-profile" "+coverage" "cloverage"]}
+   "cloverage" ["with-profile" "+coverage" "cloverage"]}
 
   :plugins
   [[lein-cljsbuild "1.1.7"]
@@ -34,7 +34,7 @@
   {:dev
    {:dependencies
     [[criterium "0.4.4"]
-     [org.clojure/clojure "1.9.0"]
+     [org.clojure/clojure "1.10.1"]
      [org.clojure/clojurescript "1.10.439"]]}
 
    :doo
@@ -43,5 +43,5 @@
 
    :coverage
    {:plugins
-    [[org.clojure/clojure "1.10.0"]
-     [lein-cloverage "1.1.0"]]}})
+    [[org.clojure/clojure "1.10.1"]
+     [lein-cloverage "1.1.2"]]}})
