@@ -10,6 +10,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Basic base-32 support in the `alphabase.base32` namespace.
 
+## [2.1.0] - 2019-10-11
+
+### Added
+- Basic base-32 support in the `alphabase.base32` namespace.
+
 ## [2.0.4] - 2019-03-23
 
 ### Fixed
@@ -92,7 +97,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/2.0.4...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/greglook/alphabase/compare/2.0.4...2.1.0
 [2.0.4]: https://github.com/greglook/alphabase/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/greglook/alphabase/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/greglook/alphabase/compare/2.0.1...2.0.2
