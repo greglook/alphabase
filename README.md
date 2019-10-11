@@ -2,8 +2,8 @@ alphabase
 =========
 
 [![CircleCI](https://circleci.com/gh/greglook/alphabase.svg?style=shield&circle-token=f1e11fd825b2006adde3d1316e465abda50b453d)](https://circleci.com/gh/greglook/alphabase)
-[![codecov](https://codecov.io/gh/greglook/alphabase/branch/develop/graph/badge.svg)](https://codecov.io/gh/greglook/alphabase)
-[![API codox](https://img.shields.io/badge/doc-API-blue.svg)](https://greglook.github.io/alphabase/api/)
+[![codecov](https://codecov.io/gh/greglook/alphabase/branch/master/graph/badge.svg)](https://codecov.io/gh/greglook/alphabase)
+[![cljdoc](https://cljdoc.org/badge/mvxcvi/alphabase)](https://cljdoc.org/d/mvxcvi/alphabase/CURRENT)
 
 A simple cross-compiled Clojure(Script) library to handle encoding binary data
 in different bases using defined alphabets. If you've ever wanted a simple way

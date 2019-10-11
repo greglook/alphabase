@@ -25,11 +25,6 @@
                         :output-to "target/cljs/tests.js"
                         :main alphabase.test-runner}}]}
 
-  :codox
-  {:metadata {:doc/format :markdown}
-   :source-uri "https://github.com/greglook/alphabase/blob/master/{filepath}#L{line}"
-   :output-path "target/doc/api"}
-
   :profiles
   {:dev
    {:dependencies
