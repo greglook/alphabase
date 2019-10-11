@@ -1,30 +1,103 @@
-version: 2
+version: 2.1
 
-jobs:
-  build:
-    working_directory: ~/code
+# Common executor configuration
+executors:
+  clojure:
     docker:
-      - image: circleci/clojure:lein-2.9.1
-    environment:
-      QT_QPA_PLATFORM: offscreen
+      - image: circleci/clojure:openjdk-11-lein-2.9.1
+    working_directory: ~/repo
+
+
+# Job definitions
+jobs:
+  style:
+    executor: clojure
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y rhino phantomjs
+      - checkout
+      - run:
+          name: Install cljfmt CLI
+          environment:
+            CLJFMT_VERSION: 0.8.3
+          command: |
+            wget https://github.com/greglook/cljfmt/releases/download/${CLJFMT_VERSION}/cljfmt_${CLJFMT_VERSION}_linux.tar.gz
+            tar -xzf cljfmt_${CLJFMT_VERSION}_linux.tar.gz
+      - run:
+          name: Check source formatting
+          command: "./cljfmt check --stats style-stats.tsv"
+      - store_artifacts:
+          path: style-stats.tsv
+          destination: style
+
+  clj-test:
+    executor: clojure
+    steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-{{ checksum "project.clj" }}
-            - v1-
+            - v1-clj-test-{{ checksum "project.clj" }}
+            - v1-clj-test-
       - run: lein deps
-      - run: lein clj:test
-      - run: lein cljs:test
-      - run: lein coverage --codecov
+      - run: lein check
+      - run: lein test
       - save_cache:
-          key: v1-{{ checksum "project.clj" }}
+          key: v1-clj-test-{{ checksum "project.clj" }}
           paths:
             - ~/.m2
+
+  cljs-test:
+    executor: clojure
+    environment:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-cljs-test-{{ checksum "project.clj" }}
+            - v1-cljs-test-
+      - run:
+          name: Install rhino and phantomjs
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y rhino phantomjs
+      - run: lein cljs:check
+      - run: lein cljs:test
+      - save_cache:
+          key: v1-cljs-test-{{ checksum "project.clj" }}
+          paths:
+            - ~/.m2
+
+  coverage:
+    executor: clojure
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-coverage-{{ checksum "project.clj" }}
+            - v1-coverage-
+            - v1-clj-test-
+      - run:
+          name: Generate test coverage
+          command: lein cloverage --codecov
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-coverage-{{ checksum "project.clj" }}
       - store_artifacts:
           path: target/coverage
           destination: coverage
       - run:
           name: Publish Coverage
-          command: "(curl -s https://codecov.io/bash > codecov) && bash codecov -f target/coverage/codecov.json"
+          command: 'bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json'
+
+
+# Workflow definitions
+workflows:
+  version: 2
+  test:
+    jobs:
+      - style
+      - clj-test
+      - cljs-test
+      - coverage:
+          requires:
+            - clj-test

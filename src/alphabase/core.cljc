@@ -71,7 +71,6 @@
         (apply str)))))
 
 
-
 ;; ## Decoding
 
 #?(:clj
