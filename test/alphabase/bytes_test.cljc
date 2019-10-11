@@ -1,7 +1,7 @@
 (ns alphabase.bytes-test
   (:require
     [alphabase.bytes :as b]
-    [clojure.test :refer-macros [deftest is are testing]]))
+    [clojure.test :refer [deftest is are testing]]))
 
 
 (deftest bytes-tests

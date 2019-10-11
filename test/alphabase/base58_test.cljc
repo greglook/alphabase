@@ -2,7 +2,7 @@
   (:require
     [alphabase.base58 :as b58]
     [alphabase.bytes :as b]
-    [clojure.test :refer-macros [deftest is testing]]))
+    [clojure.test :refer [deftest is testing]]))
 
 
 (deftest encoding-test
