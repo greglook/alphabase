@@ -7,7 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+### Added
+- Basic base-32 support in the `alphabase.base32` namespace.
 
 ## [2.0.4] - 2019-03-23
 
