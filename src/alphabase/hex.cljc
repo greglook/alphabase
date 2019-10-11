@@ -55,18 +55,18 @@
   [value]
   (cond
     (not (string? value))
-      (str "Value is not a string: " (pr-str value))
+    (str "Value is not a string: " (pr-str value))
 
     (not (re-matches #"^[0-9a-fA-F]*$" value))
-      (str "String '" value "' is not valid hex: "
-           "contains illegal characters")
+    (str "String '" value "' is not valid hex: "
+         "contains illegal characters")
 
     (< (count value) 2)
-      (str "Hex string must contain at least one byte")
+    (str "Hex string must contain at least one byte")
 
     (odd? (count value))
-      (str "String '" value "' is not valid hex: "
-           "number of characters (" (count value) ") is odd")
+    (str "String '" value "' is not valid hex: "
+         "number of characters (" (count value) ") is odd")
 
     :else nil))
 

@@ -1,9 +1,8 @@
 (ns alphabase.base32-test
   (:require
-   #?(:clj [clojure.test :refer :all]
-      :cljs [cljs.test :refer-macros [deftest is testing]])
-   [alphabase.base32 :as b32]
-   [alphabase.bytes :as b]))
+    [alphabase.base32 :as b32]
+    [alphabase.bytes :as b]
+    [clojure.test :refer-macros [deftest is testing]]))
 
 
 (deftest encoding-test

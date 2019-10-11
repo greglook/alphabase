@@ -72,7 +72,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-coverage-{{ checksum "core/project.clj" }}
+            - v1-coverage-{{ checksum "project.clj" }}
             - v1-coverage-
             - v1-clj-test-
       - run:
@@ -81,7 +81,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-coverage-{{ checksum "core/project.clj" }}
+          key: v1-coverage-{{ checksum "project.clj" }}
       - store_artifacts:
           path: target/coverage
           destination: coverage

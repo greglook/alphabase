@@ -1,7 +1,7 @@
 (ns alphabase.base32
   "Base32-check encoding implementation."
   (:require
-   [alphabase.core :as abc]))
+    [alphabase.core :as abc]))
 
 
 (def ^:const alphabet "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")

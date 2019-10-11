@@ -1,9 +1,8 @@
 (ns alphabase.hex-test
   (:require
-    #?(:clj [clojure.test :refer :all]
-       :cljs [cljs.test :refer-macros [deftest is testing]])
     [alphabase.bytes :as b]
-    [alphabase.hex :as hex]))
+    [alphabase.hex :as hex]
+    [clojure.test :refer [deftest testing is]]))
 
 
 (deftest encoding-test
