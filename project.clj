@@ -28,9 +28,9 @@
   :profiles
   {:dev
    {:dependencies
-    [[criterium "0.4.5"]
-     [org.clojure/clojure "1.10.1"]
-     [org.clojure/clojurescript "1.10.597"]]}
+    [[criterium "0.4.6"]
+     [org.clojure/clojure "1.10.3"]
+     [org.clojure/clojurescript "1.10.891"]]}
 
    :doo
    {:dependencies
@@ -38,5 +38,5 @@
 
    :coverage
    {:plugins
-    [[org.clojure/clojure "1.10.1"]
+    [[org.clojure/clojure "1.10.3"]
      [lein-cloverage "1.1.2"]]}})
