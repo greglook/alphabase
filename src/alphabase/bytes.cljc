@@ -134,13 +134,13 @@
   (let [prefix-len (min (alength a) (alength b))]
     (loop [i 0]
       (if (< i prefix-len)
-        ; Compare next byte in sequence
+        ;; Compare next byte in sequence
         (let [ai (get-byte a i)
               bi (get-byte b i)]
           (if (= ai bi)
             (recur (inc i))
             (- ai bi)))
-        ; Reached the end of the shorter key, compare lengths.
+        ;; Reached the end of the shorter key, compare lengths.
         (- (alength a) (alength b))))))
 
 

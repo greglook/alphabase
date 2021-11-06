@@ -11,7 +11,7 @@
      "Uses optimized big-integer division to calculate a sequence of tokens
      from a byte array. Only works in Clojure!"
      [^String alphabet ^bytes data]
-     ; Bigint math: ~67 µs
+     ;; Bigint math: ~67 µs
      (let [base (count alphabet)]
        (loop [n (bigint (BigInteger. 1 data))
               tokens (list)]
@@ -27,8 +27,8 @@
   "Pure implementation of radix division to calculate a sequence of
   tokens from a byte array."
   [alphabet data]
-  ; Persistent collections: ~620 µs
-  ; Transient collections:  ~515 µs
+  ;; Persistent collections: ~620 µs
+  ;; Transient collections:  ~515 µs
   (let [base (count alphabet)]
     (->>
       (bytes/byte-seq data)
@@ -39,12 +39,12 @@
                  carry value
                  i 0]
             (if (< i (count digits))
-              ; Propagate carry value across digits.
+              ;; Propagate carry value across digits.
               (let [carry' (+ carry (bit-shift-left (nth digits i) 8))]
                 (recur (assoc! digits i (mod carry' base))
                        (int (/ carry' base))
                        (inc i)))
-              ; Outside digits, add new for remaining carry.
+              ;; Outside digits, add new for remaining carry.
               (if (pos? carry)
                 (recur (conj! digits (mod carry base))
                        (int (/ carry base))
@@ -78,7 +78,7 @@
      "Uses optimized big-integer multiplication to decode a sequence of byte
      values from a string of tokens. Only works in Clojure!"
      [^String alphabet tokens]
-     ; Bigint math: ~74 µs
+     ;; Bigint math: ~74 µs
      (->
        (reverse tokens)
        (->>
@@ -109,8 +109,8 @@
   "Pure implementation of radix multiplication to calculate a sequence of byte
   values from a string of tokens."
   [^String alphabet tokens]
-  ; Persistent collections: ~255 µs
-  ; Transient collections:  ~200 µs
+  ;; Persistent collections: ~255 µs
+  ;; Transient collections:  ~200 µs
   (let [base (count alphabet)]
     (->>
       (seq tokens)
@@ -127,12 +127,12 @@
                    carry value
                    i 0]
               (if (< i (count bytev))
-                ; Emit bytes as we carry values forward.
+                ;; Emit bytes as we carry values forward.
                 (let [carry' (+ carry (* base (nth bytev i)))]
                   (recur (assoc! bytev i (bit-and carry' 0xff))
                          (bit-shift-right carry' 8)
                          (inc i)))
-                ; Outside bytes, add new for remaining carry.
+                ;; Outside bytes, add new for remaining carry.
                 (if (pos? carry)
                   (recur (conj! bytev (bit-and carry 0xff))
                          (bit-shift-right carry 8)

@@ -1,0 +1,4 @@
+;; Clojure formatting rules
+;; vim: filetype=clojure
+{:files
+ {:ignore #{".git" "checkouts" "target"}}}
