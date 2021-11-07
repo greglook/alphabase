@@ -7,36 +7,34 @@
   :deploy-branches ["master"]
 
   :aliases
-  {"clj:test" ["do" ["check"] ["test"]]
-   "cljs:check" ["with-profile" "+doo" "cljsbuild" "once"]
+  {"kaocha" ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]
+   "clj:repl" ["repl"]
+   "clj:check" ["check"]
+   "clj:test" ["kaocha" "unit-clj"]
    "cljs:repl" ["run" "-m" "clojure.main" "dev/cljs_repl.clj"]
-   "cljs:test" ["doo" "rhino" "test" "once"]
-   "cloverage" ["with-profile" "+coverage" "cloverage"]}
+   "cljs:check" ["cljsbuild" "once"]
+   "cljs:test" ["kaocha" "unit-cljs"]
+   "coverage" ["kaocha" "--plugin" "cloverage" "unit-clj"]}
 
   :plugins
-  [[lein-cljsbuild "1.1.7"]
-   [lein-doo "0.1.11"]]
+  [[lein-cljsbuild "1.1.8"]]
 
   :cljsbuild
   {:builds [{:id "test"
              :source-paths ["src" "test"]
              :compiler {:optimizations :whitespace
                         :output-dir "target/cljs/out"
-                        :output-to "target/cljs/tests.js"
-                        :main alphabase.test-runner}}]}
+                        :output-to "target/cljs/tests.js"}}]}
 
   :profiles
   {:dev
    {:dependencies
-    [[criterium "0.4.6"]
-     [org.clojure/clojure "1.10.3"]
-     [org.clojure/clojurescript "1.10.891"]]}
-
-   :doo
-   {:dependencies
-    [[doo "0.1.11"]]}
-
-   :coverage
-   {:plugins
     [[org.clojure/clojure "1.10.3"]
-     [lein-cloverage "1.1.2"]]}})
+     [org.clojure/clojurescript "1.10.879"]
+     [criterium "0.4.6"]]}
+
+   :kaocha
+   {:dependencies
+    [[lambdaisland/kaocha "1.60.945"]
+     [lambdaisland/kaocha-cloverage "1.0.75"]
+     [com.lambdaisland/kaocha-cljs "1.0.113"]]}})
