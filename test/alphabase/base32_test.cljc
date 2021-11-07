@@ -26,7 +26,10 @@
   (is (= [0 68 50 20 199 66 84 182 53 207 132 101 58 86 215 198 117 190 119 223]
          (b/byte-seq (b32/decode "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"))))
   (is (= [0 28 123 208 210 28 155 95 216 204 17 247 250]
-         (b/byte-seq (b32/decode "AHD32DJBZG273DGBD572")))))
+         (b/byte-seq (b32/decode "AHD32DJBZG273DGBD572"))))
+  (is (= [0 28 123 208 210 28 155 95 216 204 17 247 250]
+         (b/byte-seq (b32/decode "ahd32djbzg273dgbd572")))
+      "is case insensitive"))
 
 
 (deftest reflexive-encoding

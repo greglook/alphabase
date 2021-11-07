@@ -1,7 +1,8 @@
 (ns alphabase.base32
   "Base32-check encoding implementation."
   (:require
-    [alphabase.core :as abc]))
+    [alphabase.core :as abc]
+    [clojure.string :as str]))
 
 
 (def ^:const alphabet "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")
@@ -18,4 +19,4 @@
   "Decodes a base32-check string into a byte array."
   ^bytes
   [tokens]
-  (abc/decode alphabet tokens))
+  (abc/decode alphabet (str/upper-case tokens)))
