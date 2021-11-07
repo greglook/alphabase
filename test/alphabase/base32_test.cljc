@@ -2,7 +2,7 @@
   (:require
     [alphabase.base32 :as b32]
     [alphabase.bytes :as b]
-    [clojure.test :refer [deftest is testing]]))
+    [clojure.test :refer [deftest is]]))
 
 
 (deftest encoding-test
@@ -30,7 +30,7 @@
 
 
 (deftest reflexive-encoding
-  (dotimes [i 10]
+  (dotimes [_ 10]
     (let [data (b/random-bytes 30)]
       (is (b/bytes= data (b32/decode (b32/encode data)))
           (str "Base32 coding is reflexive for "

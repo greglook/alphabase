@@ -22,7 +22,7 @@
 
 
 (deftest reflexive-encoding
-  (dotimes [i 10]
+  (dotimes [_ 10]
     (let [data (b/random-bytes 30)
           encoded (hex/encode data)
           decoded (hex/decode encoded)]

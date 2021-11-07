@@ -2,7 +2,7 @@
   (:require
     [alphabase.base58 :as b58]
     [alphabase.bytes :as b]
-    [clojure.test :refer [deftest is testing]]))
+    [clojure.test :refer [deftest is]]))
 
 
 (deftest encoding-test
@@ -30,7 +30,7 @@
 
 
 (deftest reflexive-encoding
-  (dotimes [i 10]
+  (dotimes [_ 10]
     (let [data (b/random-bytes 30)]
       (is (b/bytes= data (b58/decode (b58/encode data)))
           (str "Base58 coding is reflexive for "
