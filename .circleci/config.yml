@@ -51,7 +51,9 @@ jobs:
           keys:
             - v1-clj-test-{{ checksum "project.clj" }}
             - v1-clj-test-
-      - run: lein with-profile +test,+kaocha deps
+      - run:
+          name: Fetch dependencies
+          command: lein with-profile +test,+kaocha deps
       - save_cache:
           key: v1-clj-test-{{ checksum "project.clj" }}
           paths:
@@ -74,14 +76,13 @@ jobs:
             curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
             sudo apt-get install -y nodejs
       - run: npm install ws
-      - run: lein with-profile +test,+kaocha deps
+      - run: lein cljs:check
+      - run: lein cljs:test
       - save_cache:
           key: v1-cljs-test-{{ checksum "project.clj" }}
           paths:
             - ~/.m2
             - ~/repo/node_modules
-      - run: lein cljs:check
-      - run: lein cljs:test
 
   coverage:
     executor: clojure
