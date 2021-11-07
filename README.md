@@ -2,7 +2,7 @@ alphabase
 =========
 
 [![CircleCI](https://circleci.com/gh/greglook/alphabase.svg?style=shield&circle-token=f1e11fd825b2006adde3d1316e465abda50b453d)](https://circleci.com/gh/greglook/alphabase)
-[![codecov](https://codecov.io/gh/greglook/alphabase/branch/master/graph/badge.svg)](https://codecov.io/gh/greglook/alphabase)
+[![codecov](https://codecov.io/gh/greglook/alphabase/branch/main/graph/badge.svg)](https://codecov.io/gh/greglook/alphabase)
 [![cljdoc](https://cljdoc.org/badge/mvxcvi/alphabase)](https://cljdoc.org/d/mvxcvi/alphabase/CURRENT)
 
 A simple cross-compiled Clojure(Script) library to handle encoding binary data
@@ -22,7 +22,38 @@ Leiningen, add the following dependency to your project definition:
 
 - `alphabase.bytes` namespace for generic byte-array handling
 - `alphabase.core` with arbitrary alphabet support
-- `alphabase.hex` and `alphabase.base58` with convenience wrappers
+- Built-in bases `alphabase.hex`, `alphabase.base32`, and `alphabase.base58`
+
+```clojure
+=> (require '[alphabase.bytes :as b]
+            '[alphabase.base32 :as b32]
+            '[alphabase.base58 :as b58]
+            '[alphabase.hex :as hex])
+
+=> (def data (b/random-bytes 32))
+
+=> (hex/encode data)
+"333a0fc9d17e07ff9a75afca02df9ab32fdb9eb71565e810e981773bdd1e0c90"
+
+=> (b/bytes= data (hex/decode *1))
+true
+
+=> (b32/encode data)
+"MZ2B7E5C7QH76NHLL6KALPZVMZP3OPLOFLF5AIOTALXHPOR4DEQ"
+
+=> (b/bytes= data (b32/decode *1))
+true
+
+;; base32 is case-insensitive
+=> (b/bytes= data (b32/decode (clojure.string/lower-case *2)))
+true
+
+=> (b58/encode data)
+"4Sy9GnemD6QbtaLtVTkZsZeZXExFmvGk7dJy1gDnBJCF"
+
+=> (b/bytes= data (b58/decode *1))
+true
+```
 
 
 ## Testing
@@ -33,7 +64,7 @@ The unit tests can be run using the following commands:
 # Clojure tests
 lein clj:test
 
-# ClojureScript tests on Rhino
+# ClojureScript tests on Node
 lein cljs:test
 ```
 
@@ -43,7 +74,7 @@ For a REPL, you can use these:
 # Clojure REPL
 lein repl
 
-# ClojureScript REPL on Rhino
+# ClojureScript REPL
 rlwrap lein cljs:repl
 ```
 
