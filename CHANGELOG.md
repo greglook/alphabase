@@ -9,6 +9,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [2.1.1] - 2021-11-07
+
+Largely a maintenance release, with significant build/test changes.
+
+### Added
+- Base-32 decoding is now case-insensitive.
+
 ## [2.1.0] - 2019-10-11
 
 ### Added
@@ -96,7 +103,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/2.1.0...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/2.1.1...HEAD
+[2.1.1]: https://github.com/greglook/alphabase/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/greglook/alphabase/compare/2.0.4...2.1.0
 [2.0.4]: https://github.com/greglook/alphabase/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/greglook/alphabase/compare/2.0.2...2.0.3
