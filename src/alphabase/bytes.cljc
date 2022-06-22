@@ -113,7 +113,7 @@
   ^bytes
   [length]
   (let [data (byte-array length)]
-    #?(:clj (.nextBytes (java.security.SecureRandom.) data)
+    #?(:clj (.nextBytes (java.security.SecureRandom/getInstance "NativePRNGNonBlocking") data)
        :cljs (dotimes [i length]
                (set-byte data i (rand-int 256))))
     data))
