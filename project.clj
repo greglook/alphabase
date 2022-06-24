@@ -29,12 +29,12 @@
   :profiles
   {:dev
    {:dependencies
-    [[org.clojure/clojure "1.10.3"]
-     [org.clojure/clojurescript "1.10.879"]
+    [[org.clojure/clojure "1.11.1"]
+     [org.clojure/clojurescript "1.11.60"]
      [criterium "0.4.6"]]}
 
    :kaocha
    {:dependencies
-    [[lambdaisland/kaocha "1.60.945"]
+    [[lambdaisland/kaocha "1.68.1059"]
      [lambdaisland/kaocha-cloverage "1.0.75"]
-     [com.lambdaisland/kaocha-cljs "1.0.113"]]}})
+     [com.lambdaisland/kaocha-cljs "1.2.123"]]}})
