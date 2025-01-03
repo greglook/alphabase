@@ -12,6 +12,8 @@ elif [[ $1 = cljs ]]; then
     [[ -d "node_modules/ws" ]] || npm install --no-save ws
     echo "NYI: get this working" >&2
     exit 2
+    # TODO: rlwrap?
+    exec clj -m clojure.main dev/alphabase/cljs_repl.clj
 
 else
     echo "Unknown REPL type: $1" >2
