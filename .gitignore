@@ -1,12 +1,13 @@
-/checkouts
-/node_modules
-/target
-/.lein-*
-/.nrepl-port
-profiles.clj
-pom.xml
-pom.xml.asc
+# Build tooling
 package.json
 package-lock.json
-*.jar
+
+# Dependencies and caches
+/.clj-kondo/.cache
+/.cpcache
+/node_modules
+
+# Build outputs
+/target
 *.class
+*.jar
