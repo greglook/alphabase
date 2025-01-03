@@ -4,7 +4,7 @@ version: 2.1
 executors:
   clojure:
     docker:
-      - image: circleci/clojure:openjdk-11
+      - image: cimg/clojure:1.11-openjdk-11.0
     working_directory: ~/repo
 
 
@@ -17,16 +17,14 @@ jobs:
       - run:
           name: Install cljstyle
           environment:
-            CLJSTYLE_VERSION: 0.15.0
+            CLJSTYLE_VERSION: 0.17.642
+            CLJSTYLE_PLATFORM: linux_amd64
           command: |
-            wget https://github.com/greglook/cljstyle/releases/download/${CLJSTYLE_VERSION}/cljstyle_${CLJSTYLE_VERSION}_linux.zip
-            unzip cljstyle_${CLJSTYLE_VERSION}_linux.zip
+            wget https://github.com/greglook/cljstyle/releases/download/${CLJSTYLE_VERSION}/cljstyle_${CLJSTYLE_VERSION}_${CLJSTYLE_PLATFORM}.zip
+            unzip cljstyle_${CLJSTYLE_VERSION}_${CLJSTYLE_PLATFORM}.zip
       - run:
           name: Check source formatting
-          command: "./cljstyle check --report --stats style-stats.tsv"
-      - store_artifacts:
-          path: style-stats.tsv
-          destination: style
+          command: "./cljstyle check --report"
 
   lint:
     executor: clojure
@@ -35,7 +33,7 @@ jobs:
       - run:
           name: Install clj-kondo
           environment:
-            CLJ_KONDO_VERSION: 2022.06.22
+            CLJ_KONDO_VERSION: 2024.11.14
           command: |
             wget https://github.com/borkdude/clj-kondo/releases/download/v${CLJ_KONDO_VERSION}/clj-kondo-${CLJ_KONDO_VERSION}-linux-amd64.zip
             unzip clj-kondo-${CLJ_KONDO_VERSION}-linux-amd64.zip
@@ -49,37 +47,34 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-test-clj-{{ checksum "project.clj" }}
-            - v1-test-clj-
-      - run:
-          name: Fetch dependencies
-          command: lein with-profile +test,+kaocha deps
+            - v2-test-clj-{{ checksum "deps.edn" }}
+            - v2-test-clj-
+      - run: bin/test check
+      - run: bin/test clj
       - save_cache:
-          key: v1-test-clj-{{ checksum "project.clj" }}
+          key: v2-test-clj-{{ checksum "deps.edn" }}
           paths:
             - ~/.m2
-      - run: lein clj:check
-      - run: lein clj:test
 
   test-cljs:
     executor: clojure
+    environment:
+      QT_QPA_PLATFORM: offscreen
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-test-cljs-{{ checksum "project.clj" }}
-            - v1-test-cljs-
-            - v1-test-clj-
       - run:
-          name: Install nodejs
+          name: Install NodeJS
           command: |
             curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
             sudo apt-get install -y nodejs
-            npm install ws
-      - run: lein cljs:check
-      - run: lein cljs:test
+      - checkout
+      - restore_cache:
+          keys:
+            - v2-test-cljs-{{ checksum "deps.edn" }}
+            - v2-test-cljs-
+            - v2-test-clj-
+      - run: bin/test cljs
       - save_cache:
-          key: v1-test-cljs-{{ checksum "project.clj" }}
+          key: v2-test-cljs-{{ checksum "deps.edn" }}
           paths:
             - ~/.m2
             - ~/repo/node_modules
@@ -90,16 +85,16 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-coverage-{{ checksum "project.clj" }}
-            - v1-coverage-
-            - v1-test-clj-
+            - v2-coverage-{{ checksum "deps.edn" }}
+            - v2-coverage-
+            - v2-test-clj-
       - run:
           name: Generate test coverage
-          command: lein coverage --codecov
+          command: bin/test coverage --codecov
       - save_cache:
+          key: v2-coverage-{{ checksum "deps.edn" }}
           paths:
             - ~/.m2
-          key: v1-coverage-{{ checksum "project.clj" }}
       - store_artifacts:
           path: target/coverage
           destination: coverage

@@ -12,6 +12,9 @@ elif [[ $1 = coverage ]]; then
     shift
     exec clojure -M:coverage "$@"
 
+elif [[ $1 = clj ]]; then
+    exec clojure -M:test "$@"
+
 else
     [[ -d node_modules/ws ]] || npm install --no-save ws
     exec clojure -M:test "$@"
