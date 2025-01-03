@@ -7,13 +7,14 @@ alphabase
 
 A simple cross-compiled Clojure(Script) library to handle encoding binary data
 in different bases using defined alphabets. If you've ever wanted a simple way
-to encode a byte array as hexadecimal or base58, this library is for you!
+to encode a byte array as hexadecimal, base32, or base58, this library is for
+you!
 
 
 ## Installation
 
-Library releases are published on Clojars. To use the latest version with
-Leiningen, add the following dependency to your project definition:
+Library releases are published on Clojars. To use the latest version, add the
+following dependency to your project:
 
 [![Clojars Project](http://clojars.org/mvxcvi/alphabase/latest-version.svg)](http://clojars.org/mvxcvi/alphabase)
 
@@ -62,20 +63,20 @@ The unit tests can be run using the following commands:
 
 ```sh
 # Clojure tests
-lein clj:test
+bin/test clj
 
 # ClojureScript tests on Node
-lein cljs:test
+bin/test cljs
 ```
 
 For a REPL, you can use these:
 
 ```sh
 # Clojure REPL
-lein repl
+bin/repl
 
 # ClojureScript REPL
-rlwrap lein cljs:repl
+bin/repl cljs
 ```
 
 
