@@ -1,7 +1,7 @@
 alphabase
 =========
 
-[![CircleCI](https://circleci.com/gh/greglook/alphabase.svg?style=shield&circle-token=f1e11fd825b2006adde3d1316e465abda50b453d)](https://circleci.com/gh/greglook/alphabase)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/greglook/alphabase/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/greglook/alphabase/tree/main)
 [![codecov](https://codecov.io/gh/greglook/alphabase/branch/main/graph/badge.svg)](https://codecov.io/gh/greglook/alphabase)
 [![cljdoc](https://cljdoc.org/badge/mvxcvi/alphabase)](https://cljdoc.org/d/mvxcvi/alphabase/CURRENT)
 
