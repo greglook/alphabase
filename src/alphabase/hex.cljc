@@ -1,5 +1,6 @@
 (ns alphabase.hex
   "Functions to encode and decode bytes as hexadecimal."
+  {:clj-kondo/ignore [:unused-namespace]}
   (:require
     [alphabase.bytes :as bytes]
     [clojure.string :as str]))
@@ -22,16 +23,34 @@
      :cljs (js/parseInt hex 16)))
 
 
-(defn encode
-  "Converts a byte array into a lowercase hexadecimal string. Returns nil for
-  empty inputs."
-  ^String
-  [^bytes data]
-  (when (and data (pos? (alength data)))
-    (->> (bytes/byte-seq data)
-         (map byte->hex)
-         (str/join)
-         (str/lower-case))))
+#?(:clj
+   (let [alphabet (.toCharArray "0123456789abcdef")]
+     (defn encode
+       "Converts a byte array into a lowercase hexadecimal string. Returns nil for
+       empty inputs."
+       ^String
+       [^bytes data]
+       (when (and data (pos? (alength data)))
+         (let [chrs (char-array (* 2 (alength data)))]
+           (dotimes [i (alength data)]
+             (let [b (bytes/get-byte data i)
+                   high (bit-and (bit-shift-right b 4) 0x0F)
+                   low (bit-and b 0x0F)
+                   pos (* 2 i)]
+               (aset-char chrs pos ^char (aget alphabet high))
+               (aset-char chrs (inc pos) ^char (aget alphabet low))))
+           (String. chrs)))))
+
+   :default
+   (defn encode
+     "Converts a byte array into a lowercase hexadecimal string. Returns nil for
+     empty inputs."
+     [data]
+     (when (and data (pos? (alength data)))
+       (->> (bytes/byte-seq data)
+            (map byte->hex)
+            (str/join)
+            (str/lower-case)))))
 
 
 (defn decode
@@ -62,7 +81,7 @@
          "contains illegal characters")
 
     (< (count value) 2)
-    (str "Hex string must contain at least one byte")
+    "Hex string must contain at least one byte"
 
     (odd? (count value))
     (str "String '" value "' is not valid hex: "
