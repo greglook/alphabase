@@ -13,7 +13,9 @@
     [clojure.java.io :as io]
     [clojure.string :as str]
     [clojure.tools.build.api :as b]
-    [deps-deploy.deps-deploy :as d]))
+    [deps-deploy.deps-deploy :as d])
+  (:import
+    java.time.LocalDate))
 
 
 (def basis (b/create-basis {:project "deps.edn"}))
@@ -98,7 +100,6 @@
         (System/exit 2))))
   (let [version (version-info opts true)
         tag (:tag version)]
-    (update-version version)
     (update-changelog version)
     (b/git-process {:git-args ["commit" "-am" (str "Prepare release " tag)]})
     (b/git-process {:git-args ["tag" tag "-s" "-m" (str "Release " tag)]})
@@ -107,6 +108,17 @@
 
 
 ;; ## Library Installation
+
+(defn javac
+  "Compile the Java code to a class file."
+  [opts]
+  (b/javac
+    {:basis basis
+     :src-dirs [src-dir]
+     :class-dir class-dir
+     :javac-opts ["--release" "11"]})
+  opts)
+
 
 (defn- pom-template
   "Generate template data for the Maven pom.xml file."
@@ -154,9 +166,11 @@
         jar-file (format "target/%s-%s.jar"
                          (name lib-name)
                          (:tag version))]
+    ;; TODO: this ships the Codec java source - does it matter?
     (b/copy-dir
       {:src-dirs [src-dir]
        :target-dir class-dir})
+    (javac opts)
     (b/jar
       {:class-dir class-dir
        :jar-file jar-file})

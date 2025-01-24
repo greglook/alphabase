@@ -3,7 +3,10 @@
   {:clj-kondo/ignore [:unused-namespace]}
   (:require
     [alphabase.bytes :as bytes]
-    [clojure.string :as str]))
+    [clojure.string :as str])
+  #?(:clj
+     (:import
+       alphabase.Codec)))
 
 
 (defn byte->hex
@@ -23,30 +26,16 @@
      :cljs (js/parseInt hex 16)))
 
 
-#?(:clj
-   (let [alphabet (.toCharArray "0123456789abcdef")]
-     (defn encode
-       "Converts a byte array into a lowercase hexadecimal string. Returns nil for
-       empty inputs."
-       ^String
-       [^bytes data]
-       (when (and data (pos? (alength data)))
-         (let [chrs (char-array (* 2 (alength data)))]
-           (dotimes [i (alength data)]
-             (let [b (bytes/get-byte data i)
-                   high (bit-and (bit-shift-right b 4) 0x0F)
-                   low (bit-and b 0x0F)
-                   pos (* 2 i)]
-               (aset-char chrs pos ^char (aget alphabet high))
-               (aset-char chrs (inc pos) ^char (aget alphabet low))))
-           (String. chrs)))))
+(defn encode
+  "Converts a byte array into a lowercase hexadecimal string. Returns nil for
+  empty inputs."
+  ^String
+  [^bytes data]
+  (when (and data (pos? (alength data)))
+    #?(:clj
+       (Codec/encodeHex data)
 
-   :default
-   (defn encode
-     "Converts a byte array into a lowercase hexadecimal string. Returns nil for
-     empty inputs."
-     [data]
-     (when (and data (pos? (alength data)))
+       :default
        (->> (bytes/byte-seq data)
             (map byte->hex)
             (str/join)
@@ -58,13 +47,17 @@
   array is zero-padded to match the hex string length."
   ^bytes
   [^String data]
-  (when-not (empty? data)
-    (let [length (/ (count data) 2)
-          array (bytes/byte-array length)]
-      (dotimes [i length]
-        (let [hex (subs data (* 2 i) (* 2 (inc i)))]
-          (bytes/set-byte array i (hex->byte hex))))
-      array)))
+  (when-not (str/blank? data)
+    #?(:clj
+       (Codec/decodeHex data)
+
+       :default
+       (let [length (/ (count data) 2)
+             array (bytes/byte-array length)]
+         (dotimes [i length]
+           (let [hex (subs data (* 2 i) (* 2 (inc i)))]
+             (bytes/set-byte array i (hex->byte hex))))
+         array))))
 
 
 (defn validate

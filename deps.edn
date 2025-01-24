@@ -8,7 +8,7 @@
    :ns-default build}
 
   :dev
-  {:extra-paths ["dev" "test"]
+  {:extra-paths ["dev" "test" "target/classes"]
    :extra-deps {org.clojure/clojure {:mvn/version "1.12.0"}
                 org.clojure/tools.namespace {:mvn/version "1.5.0"}
                 com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.5.1"}
@@ -25,18 +25,19 @@
                "-e" "(clojure.main/repl,:init,#(do,(require,'alphabase.repl),(in-ns,'alphabase.repl)),:print,puget.printer/cprint,:caught,clojure.stacktrace/print-cause-trace)"]}
 
   :check
-  {:extra-deps {io.github.athos/clj-check {:git/sha "d997df866b2a04b7ce7b17533093ee0a2e2cb729"}}
+  {:extra-paths ["target/classes"]
+   :extra-deps {io.github.athos/clj-check {:git/sha "d997df866b2a04b7ce7b17533093ee0a2e2cb729"}}
    :main-opts ["-m" "clj-check.check"]}
 
   :test
-  {:extra-paths ["test"]
+  {:extra-paths ["test" "target/classes"]
    :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}
                 com.lambdaisland/kaocha-cljs {:mvn/version "1.5.154"}}
    :jvm-opts ["-XX:-OmitStackTraceInFastThrow"]
    :main-opts ["-m" "kaocha.runner"]}
 
   :coverage
-  {:extra-paths ["test"]
+  {:extra-paths ["test" "target/classes"]
    :extra-deps {cloverage/cloverage {:mvn/version "1.2.4"}}
    :main-opts ["-m" "cloverage.coverage"
                "--src-ns-path" "src"
