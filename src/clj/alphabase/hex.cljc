@@ -6,7 +6,7 @@
     [clojure.string :as str])
   #?(:clj
      (:import
-       alphabase.Codec)))
+       alphabase.codec.Hex)))
 
 
 (defn byte->hex
@@ -33,7 +33,7 @@
   [^bytes data]
   (when (and data (pos? (alength data)))
     #?(:clj
-       (Codec/encodeHex data)
+       (Hex/encode data)
 
        :default
        (->> (bytes/byte-seq data)
@@ -49,7 +49,7 @@
   [^String data]
   (when-not (str/blank? data)
     #?(:clj
-       (Codec/decodeHex data)
+       (Hex/decode data)
 
        :default
        (let [length (/ (count data) 2)

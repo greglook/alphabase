@@ -1,7 +1,10 @@
 (ns alphabase.core
   "Core encoding and decoding functions for use with arbitrary bases."
   (:require
-    [alphabase.bytes :as bytes]))
+    [alphabase.bytes :as bytes])
+  #?(:clj
+     (:import
+       alphabase.codec.Radix)))
 
 
 ;; ## Encoding
@@ -62,12 +65,16 @@
   [alphabet ^bytes data]
   {:pre [(string? alphabet) (< 1 (count alphabet))]}
   (when (and data (not (zero? (alength data))))
-    (let [zeroes (count (take-while zero? (bytes/byte-seq data)))]
-      (->>
-        (when (< zeroes (alength data))
-          (alpha-divide alphabet data))
-        (concat (repeat zeroes (first alphabet)))
-        (apply str)))))
+    #?(#_#_:clj
+       (Radix/encode alphabet data)
+
+       :default
+       (let [zeroes (count (take-while zero? (bytes/byte-seq data)))]
+         (->>
+           (when (< zeroes (alength data))
+             (alpha-divide alphabet data))
+           (concat (repeat zeroes (first alphabet)))
+           (apply str))))))
 
 
 ;; ## Decoding

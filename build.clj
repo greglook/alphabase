@@ -23,7 +23,8 @@
 (def lib-name 'mvxcvi/alphabase)
 (def major-version "2.2")
 
-(def src-dir "src")
+(def clj-src-dir "src/clj")
+(def java-src-dir "src/java")
 (def class-dir "target/classes")
 
 
@@ -114,7 +115,7 @@
   [opts]
   (b/javac
     {:basis basis
-     :src-dirs [src-dir]
+     :src-dirs [java-src-dir]
      :class-dir class-dir
      :javac-opts ["--release" "11"]})
   opts)
@@ -147,7 +148,7 @@
       {:basis basis
        :lib lib-name
        :version (:tag version)
-       :src-dirs [src-dir]
+       :src-dirs ["src"]
        :class-dir class-dir
        :pom-data (pom-template
                    (if (or (:snapshot opts) (:qualifier opts))
@@ -166,9 +167,8 @@
         jar-file (format "target/%s-%s.jar"
                          (name lib-name)
                          (:tag version))]
-    ;; TODO: this ships the Codec java source - does it matter?
     (b/copy-dir
-      {:src-dirs [src-dir]
+      {:src-dirs [clj-src-dir]
        :target-dir class-dir})
     (javac opts)
     (b/jar

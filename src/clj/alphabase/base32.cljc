@@ -2,7 +2,10 @@
   "Base32-check encoding implementation."
   (:require
     [alphabase.core :as abc]
-    [clojure.string :as str]))
+    [clojure.string :as str])
+  #?(:clj
+     (:import
+       alphabase.codec.Base32)))
 
 
 (def ^:const alphabet "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")

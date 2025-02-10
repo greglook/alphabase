@@ -1,35 +1,33 @@
-package alphabase;
+package alphabase.codec;
 
 
 /**
- * Utility code providing efficient codec operations in Clojure.
+ * Utility code providing efficient hex codec operations in Clojure.
  */
-public class Codec {
+public class Hex {
+
+    private static final char[] ALPHABET = "0123456789abcdef".toCharArray();
+
 
     /**
      * Static utility class doesn't need constructed instances.
      */
-    private Codec() {}
-
-
-    ///// Hex Encoding /////
-
-    private static final char[] HEX_ALPHABET = "0123456789abcdef".toCharArray();
+    private Hex() {}
 
 
     /**
-     * Encode a byte array to a hex string.
+     * Encode a byte array to a hexadecimal string.
      *
      * @param data  array of bytes to encode
-     * @return hexadecimal string
+     * @return encoded string
      */
-    public static String encodeHex(byte[] data) {
+    public static String encode(byte[] data) {
         char[] chars = new char[2 * data.length];
         for (int i = 0; i < data.length; i++) {
             byte val = data[i];
             int off = 2*i;
-            chars[off] = HEX_ALPHABET[(val & 0xF0) >>> 4];
-            chars[off+1] = HEX_ALPHABET[val & 0x0F];
+            chars[off] = ALPHABET[(val & 0xF0) >>> 4];
+            chars[off+1] = ALPHABET[val & 0x0F];
         }
         return new String(chars);
     }
@@ -43,7 +41,7 @@ public class Codec {
      * @return numeric value representing the nybble
      * @throws IllegalArgumentException on error
      */
-    private static int decodeHexNybble(String hex, int idx) {
+    private static int decodeNybble(String hex, int idx) {
         char c = hex.charAt(idx);
         if ('0' <= c && c <= '9') {
             return c - '0';
@@ -58,17 +56,17 @@ public class Codec {
 
 
     /**
-     * Decode a hex string to a byte array.
+     * Decode a hexadecimal string to a byte array.
      *
-     * @param hex  string of hexadecimal characters
-     * @return byte array
+     * @param string  string of encoded characters
+     * @return byte array data
      */
-    public static byte[] decodeHex(String hex) {
-        int length = hex.length() / 2;
+    public static byte[] decode(String string) {
+        int length = string.length() / 2;
         byte[] data = new byte[length];
         for (int i = 0; i < length; i++) {
             int offset = 2*i;
-            int octet = (decodeHexNybble(hex, offset) << 4) | decodeHexNybble(hex, offset + 1);
+            int octet = (decodeNybble(string, offset) << 4) | decodeNybble(string, offset + 1);
             data[i] = (byte)octet;
         }
         return data;
