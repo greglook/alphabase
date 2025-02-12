@@ -5,13 +5,8 @@ set -e
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-CODEC_SRC="src/alphabase/Codec.java"
-CODEC_CLASS="target/classes/alphabase/Codec.class"
-
 if [[ -z $1 || $1 = clj ]]; then
-    if [[ ! -f $CODEC_CLASS || $CODEC_SRC -nt $CODEC_CLASS ]]; then
-        clojure -T:build javac
-    fi
+    clojure -T:build javac
     exec clj -M:dev:repl
 
 elif [[ $1 = cljs ]]; then
