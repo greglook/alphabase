@@ -1,6 +1,9 @@
 (ns alphabase.bytes
   "Functions to generically handle byte arrays."
-  (:refer-clojure :exclude [bytes? byte-array compare concat]))
+  (:refer-clojure :exclude [bytes? byte-array compare concat])
+  #?(:clj
+     (:import
+       java.util.Arrays)))
 
 
 (defn to-byte
@@ -56,14 +59,16 @@
     (bytes? a) (bytes? b)
     (let [^bytes a a
           ^bytes b b]
-      (and
-        (= (alength a) (alength b))
-        (loop [i 0]
-          (if (< i (alength a))
-            (if (= (get-byte a i) (get-byte b i))
-              (recur (inc i))
-              false)
-            true))))))
+      #?(:clj (Arrays/equals a b)
+         :default
+         (and
+           (= (alength a) (alength b))
+           (loop [i 0]
+             (if (< i (alength a))
+               (if (= (get-byte a i) (get-byte b i))
+                 (recur (inc i))
+                 false)
+               true)))))))
 
 
 (defn byte-array
