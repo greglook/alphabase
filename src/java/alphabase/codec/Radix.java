@@ -76,9 +76,60 @@ public class Radix {
      * @param string    encoded string data
      * @return decoded byte array
      */
-    public static byte[] decodeRadix(String alphabet, String string) {
-        // TODO: implement
-        return null;
+    public static byte[] decode(String alphabet, String string) {
+        int base = alphabet.length();
+        int strLen = string.length();
+
+        // Count the number of leading 'zeros' in the string.
+        int leadingZeros = 0;
+        char zeroDigit = alphabet.charAt(0);
+        for (int i = 0; i < strLen; i++) {
+            if (string.charAt(i) == zeroDigit) {
+                leadingZeros++;
+            } else {
+                break;
+            }
+        }
+
+        // If the string is all zero digits, return an array of zeros.
+        if (leadingZeros == strLen) {
+            return new byte[leadingZeros];
+        }
+
+        // For each digit, starting with the least significant (rightmost)
+        // multiply by the base to the power of that digit's position.
+        BigInteger bigBase = BigInteger.valueOf((long)base);
+        BigInteger n = BigInteger.ZERO;
+        BigInteger p = BigInteger.ONE;
+        for (int i = strLen - 1; i >= leadingZeros; i--) {
+            char digit = string.charAt(i);
+            int v = alphabet.indexOf(digit);
+
+            if (v < 0) {
+                throw new IllegalArgumentException("Character '" + digit + "' at index " + i + " is not a valid digit");
+            }
+
+            BigInteger bigDigit = BigInteger.valueOf((long)v);
+            n = n.add(bigDigit.multiply(p));
+            p = p.multiply(bigBase);
+        }
+
+        // Convert bigint into a byte array.
+        byte[] bigBytes = n.toByteArray();
+        boolean skipByte = (bigBytes.length > 1) && (bigBytes[0] == 0) && (bigBytes[1] < 0);
+
+        // If there are no leading zeros and we don't need to skip a byte,
+        // return directly.
+        if ((leadingZeros == 0) && !skipByte) {
+            return bigBytes;
+        }
+
+        // Otherwise, copy results into new byte array to return.
+        int skip = (skipByte ? 1 : 0);
+        byte[] output = new byte[leadingZeros + bigBytes.length - skip];
+        System.arraycopy(bigBytes, skip, output, leadingZeros, bigBytes.length - skip);
+
+        return output;
     }
 
 }

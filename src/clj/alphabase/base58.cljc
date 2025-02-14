@@ -1,21 +1,23 @@
 (ns alphabase.base58
   "Base58-check encoding implementation."
   (:require
-    [alphabase.core :as abc]))
+    [alphabase.radix :as radix]))
 
 
 (def ^:const alphabet "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
 
 
 (defn encode
-  "Converts a byte array into a base58-check string."
+  "Encode a byte array into a base58-check string. Returns nil for nil or empty
+  data."
   ^String
   [data]
-  (abc/encode alphabet data))
+  (radix/encode alphabet data))
 
 
 (defn decode
-  "Decodes a base58-check string into a byte array."
+  "Decode a byte array from a base58-check string. Returns nil for nil or blank
+  strings."
   ^bytes
-  [tokens]
-  (abc/decode alphabet tokens))
+  [string]
+  (radix/decode alphabet string))
