@@ -12,17 +12,17 @@ public class Base32 {
     private static final char[] RFC_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".toCharArray();
     private static final char[] HEX_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUV".toCharArray();
 
-    private static final int[] RFC_LOOKUP;
-    private static final int[] HEX_LOOKUP;
+    private static final byte[] RFC_LOOKUP;
+    private static final byte[] HEX_LOOKUP;
 
     static {
-        RFC_LOOKUP = new int[91];
-        Arrays.fill(RFC_LOOKUP, -1);
+        RFC_LOOKUP = new byte[91];
+        Arrays.fill(RFC_LOOKUP, (byte)(-1));
 
-        HEX_LOOKUP = new int[91];
-        Arrays.fill(HEX_LOOKUP, -1);
+        HEX_LOOKUP = new byte[91];
+        Arrays.fill(HEX_LOOKUP, (byte)(-1));
 
-        for (int i = 0; i < 32; i++) {
+        for (byte i = 0; i < 32; i++) {
             RFC_LOOKUP[(int)RFC_ALPHABET[i]] = i;
             HEX_LOOKUP[(int)HEX_ALPHABET[i]] = i;
         }
@@ -76,7 +76,8 @@ public class Base32 {
             // Unpack and encode digits from the long. Note that the digits are
             // assigned working backwards from the LSB.
             for (int offset = outputLen - 1; offset >= 0; offset--) {
-                chars[charIdx+offset] = alphabet[(int)(n & 0x1F)];
+                char digit = alphabet[(int)(n & 0x1F)];
+                chars[charIdx+offset] = digit;
                 n = n >>> 5;
             }
 
@@ -95,7 +96,6 @@ public class Base32 {
                     + chars.length + " characters, but only got " + charIdx);
         }
 
-        //return new String(chars, 0, charIdx);
         return new String(chars);
     }
 
@@ -108,7 +108,7 @@ public class Base32 {
      * @return byte array data
      */
     public static byte[] decode(String string, boolean inHex) {
-        int[] lookup = inHex ? HEX_LOOKUP : RFC_LOOKUP;
+        byte[] lookup = inHex ? HEX_LOOKUP : RFC_LOOKUP;
         int charLen = string.length();
         int charIdx = 0;
 
@@ -138,13 +138,13 @@ public class Base32 {
             for (int i = 0; i < chunkLen; i++) {
                 char digit = string.charAt(charIdx);
                 int d = (int)Character.toUpperCase(digit);
-                int v = (d < lookup.length) ? lookup[d] : -1;
+                int v = (d < lookup.length) ? (int)lookup[d] : -1;
 
                 if (v < 0) {
-                    throw new IllegalArgumentException("Character '" + digit + "' is not a valid Base32 digit");
+                    throw new IllegalArgumentException("Character '" + digit + "' at index " + charIdx + " is not a valid Base32 digit");
                 }
 
-                n = (n << 5) | (v & 0xFF);
+                n = (n << 5) | (v & 0x1F);
                 charIdx++;
             }
 

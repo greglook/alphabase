@@ -3,7 +3,7 @@
   alphabet."
   (:require
     [alphabase.bytes :as b]
-    [alphabase.core :as abc]
+    [clojure.math :as math]
     [clojure.string :as str])
   #?(:clj
      (:import
@@ -26,61 +26,70 @@
                    hex-alphabet
                    rfc-alphabet)
         data-len (alength data)
-        padding (rem data-len 5)]
-    (loop [groups []
-           offset 0]
-      (if (< offset data-len)
-        ;; Read in 40 bits as 5 octets, write 8 characters.
-        (let [input-bytes (min 5 (- data-len offset))
-              output-chars (cond-> (int (/ (* input-bytes 8) 5))
-                             (pos? (rem (* input-bytes 8) 5))
-                             (inc))
-              [b0 b1 b2 b3 b4 :as bs] (map #(or (b/get-byte data (+ offset %)) 0)
-                                    (range 0 input-bytes))
-              bits [;; top 5 bits of byte 0
-                    (when b0
-                      (bit-and (bit-shift-right b0 3) 0x1F))
-                    ;; bottom 3 bits of byte 0 + top 2 bits of byte 1
-                    (when b1
-                      (bit-or (bit-and (bit-shift-left  b0 2) 0x1C)
-                              (bit-and (bit-shift-right b1 6) 0x03)))
-                    ;; middle 5 bits of byte 1
-                    (when b2
-                      (bit-and (bit-shift-right b1 1) 0x1F))
-                    ;; bottom 1 bit of byte 1 + top 4 bits of byte 2
-                    (when b2
-                      (bit-or (bit-and (bit-shift-left  b1 4) 0x10)
-                              (bit-and (bit-shift-right b2 4) 0x0F)))
-                    (when b3
-                      ;; bottom 4 bits of byte 2 + top 1 bit of byte 3
-                      (bit-or (bit-and (bit-shift-left  b2 1) 0x1E)
-                              (bit-and (bit-shift-right b3 7) 0x01)))
-                    (when b3
-                      ;; middle 5 bits of byte 3
-                      (bit-and (bit-shift-right b3 2) 0x1F))
-                    (when b4
-                      ;; bottom 2 bits of byte 3 + top 3 bits of byte 4
-                      (bit-or (bit-and (bit-shift-left  b3 3) 0x18)
-                              (bit-and (bit-shift-right b4 5) 0x07)))
-                    ;; bottom 5 bits of byte 4
-                    (when b4
-                      (bit-and b4 0x1F))]
-              s (->>
-                  bits
-                  (take-while some?)
-                  (map #(nth alphabet %))
-                  (take output-chars)
-                  (apply str))]
-          (recur (conj groups s) (+ offset 5)))
-        ;; Apply padding to final result.
-        (cond-> (apply str groups)
-          pad?
-          (str (case (int padding)
-                 4 "="
-                 3 "==="
-                 2 "===="
-                 1 "======"
-                 nil)))))))
+        digits-len (int (math/ceil (* 1.6 data-len)))
+        padding-len (if (and pad? (not= 0 (mod digits-len 8)))
+                      (- 8 (mod digits-len 8))
+                      0)
+        output #?(:clj (char-array (+ digits-len padding-len))
+                  :cljs (make-array (+ digits-len padding-len)))]
+    (loop [data-idx 0
+           char-idx 0]
+      (if (< data-idx data-len)
+        ;; Determine next input and output chunk to encode.
+        (let [chunk-len (min 5 (- data-len data-idx))
+              output-len (if (= 5 chunk-len)
+                           8
+                           (int (math/ceil (* 1.6 chunk-len))))
+              ;; Read chunk bytes and bit-pack them together. Javascript shift
+              ;; operators treat numbers as only 32 bits, so use a high and low
+              ;; pair instead of a single number.
+              [hi lo] (loop [hi 0
+                             lo 0
+                             i 0]
+                        (if (< i chunk-len)
+                          (recur (bit-or (bit-shift-left hi 8)
+                                         (bit-and (unsigned-bit-shift-right lo 24)
+                                                  0xFF))
+                                 (bit-or (bit-shift-left lo 8)
+                                         (bit-and (b/get-byte data (+ data-idx i))
+                                                  0xFF))
+                                 (inc i))
+                          [hi lo]))
+              ;; Right-pad with zero bits to make total evenly divisible.
+              [hi lo] (if (not= 5 chunk-len)
+                        (let [padding-bits (- 5 (mod (* 8 chunk-len) 5))
+                              mask (dec (bit-shift-left 1 padding-bits))]
+                          [(bit-or (bit-shift-left hi padding-bits)
+                                   (bit-and (unsigned-bit-shift-right lo (- 32 padding-bits))
+                                            mask))
+                           (bit-shift-left lo padding-bits)])
+                        [hi lo])]
+          ;; Unpack and encode digits from the numbers.
+          (loop [hi hi
+                 lo lo
+                 offset (dec output-len)]
+            (when (<= 0 offset)
+              (let [digit (nth alphabet (bit-and lo 0x1F))]
+                (aset output (+ char-idx offset) digit)
+                (recur (unsigned-bit-shift-right hi 5)
+                       (bit-or (unsigned-bit-shift-right lo 5)
+                               (bit-shift-left (bit-and hi 0x1F) 27))
+                       (dec offset)))))
+          (recur (+ data-idx chunk-len)
+                 (+ char-idx output-len)))
+        ;; Done encoding, finish loop.
+        (do
+          ;; Write padding characters if set.
+          (dotimes [i padding-len]
+            (aset output (+ char-idx i) \=))
+          ;; Sanity check that we wrote the expected number of characters.
+          (let [char-idx (+ char-idx padding-len)]
+            (when (not= (alength output) char-idx)
+              (throw (ex-info (str "Expected to encode " data-len " byte array into "
+                                   (alength output) " characters, but only got " char-idx)
+                              {:data data
+                               :output (str/join output)}))))
+          (str/join output))))))
 
 
 (defn- decode-pure
@@ -91,53 +100,68 @@
   (let [alphabet (if hex?
                    hex-alphabet
                    rfc-alphabet)
-        char->n (into {} (map vector (seq alphabet) (range)))
-        input (str/replace (str/upper-case string) #"=+$" "")
-        length (let [l (* 5 (int (/ (count input) 8)))]
-                 (case (rem (count input) 8)
-                   0 (+ l 0)
-                   2 (+ l 1)
-                   4 (+ l 2)
-                   5 (+ l 3)
-                   7 (+ l 4)))
-        buffer (b/byte-array length)]
-    (loop [char-offset 0
-           byte-offset 0]
-      (when (< char-offset (count string))
-        ;; Read in 40 bits as 8 characters, write 5 octets.
-        (let [input-chars (min 8 (- (count input) char-offset))
-              output-bytes (case input-chars
-                             2 1
-                             4 2
-                             5 3
-                             7 4
-                             8 5)
-              [c0 c1 c2 c3 c4 c5 c6 c7]
-              (concat (map #(char->n (nth input (+ char-offset %)))
-                           (range input-chars))
-                      (repeat (- 8 input-chars) 0))
-              bs
-              [;; 5 bits of c0 + top 3 bits of c1
-               (bit-or (bit-and 0xF8 (bit-shift-left  c0 3))
-                       (bit-and 0x07 (bit-shift-right c1 2)))
-               ;; bottom 2 bits of c1 + 5 bits of c2 + top 1 bit of c3
-               (bit-or (bit-and 0xC0 (bit-shift-left  c1 6))
-                       (bit-and 0x3E (bit-shift-left  c2 1))
-                       (bit-and 0x01 (bit-shift-right c3 4)))
-               ;; bottom 4 bits of c3 + top 4 bits of c4
-               (bit-or (bit-and 0xF0 (bit-shift-left  c3 4))
-                       (bit-and 0x0F (bit-shift-right c4 1)))
-               ;; bottom 1 bits of c4 + 5 bits of c5 + top 2 bit of c6
-               (bit-or (bit-and 0x80 (bit-shift-left  c4 7))
-                       (bit-and 0x7C (bit-shift-left  c5 2))
-                       (bit-and 0x03 (bit-shift-right c6 3)))
-               ;; bottom 3 bits of c6 + 5 bits of c7
-               (bit-or (bit-and 0xE0 (bit-shift-left c6 5))
-                       (bit-and 0x1F c7))]]
-          (dotimes [i output-bytes]
-            (b/set-byte buffer (+ byte-offset i) (nth bs i))))
-        (recur (+ char-offset 8) (+ byte-offset 5))))
-    buffer))
+        string (str/replace (str/upper-case string) #"=+$" "")
+        char-len (count string)
+        data-len (int (math/floor (* 0.625 char-len)))
+        data (b/byte-array data-len)]
+    (loop [char-idx 0
+           data-idx 0]
+      (if (< char-idx char-len)
+        (let [chunk-len (min 8 (- char-len char-idx))
+              ;; Decode chunk digits and bit-pack them together. Javascript shift
+              ;; operators treat numbers as only 32 bits, so use a high and low
+              ;; pair instead of a single number.
+              [hi lo] (loop [hi 0
+                             lo 0
+                             i 0]
+                        (if (< i chunk-len)
+                          (let [digit (nth string (+ char-idx i))
+                                v (str/index-of alphabet digit)]
+                            (when-not v
+                              (throw (ex-info (str "Character '" digit "' at index "
+                                                   (+ char-idx i) " is not a valid Base32 digit")
+                                              {:index (+ char-idx i)
+                                               :char digit})))
+                            (recur (bit-or (bit-shift-left hi 5)
+                                           (bit-and (unsigned-bit-shift-right lo 27)
+                                                    0x1F))
+                                   (bit-or (bit-shift-left lo 5)
+                                           (bit-and v 0x1F))
+                                   (inc i)))
+                          [hi lo]))
+              output-len (if (= 8 chunk-len)
+                           5
+                           (int (math/floor (* 0.625 chunk-len))))
+              ;; Unpad extra zero bits to make total evenly divisible.
+              [hi lo] (if (not= 8 chunk-len)
+                        (let [padding-bits (- 5 (mod (* 8 output-len) 5))
+                              mask (dec (bit-shift-left 1 padding-bits))]
+                          [(unsigned-bit-shift-right hi padding-bits)
+                           (bit-or (unsigned-bit-shift-right lo padding-bits)
+                                   (bit-shift-left (bit-and hi mask)
+                                                   (- 32 padding-bits)))])
+                        [hi lo])]
+          ;; Unpack bytes from the decoded numbers.
+          (loop [hi hi
+                 lo lo
+                 offset (dec output-len)]
+            (when (<= 0 offset)
+              (b/set-byte data (+ data-idx offset) (bit-and lo 0xFF))
+              (recur (unsigned-bit-shift-right hi 8)
+                     (bit-or (unsigned-bit-shift-right lo 8)
+                             (bit-shift-left (bit-and hi 0xFF) 24))
+                     (dec offset))))
+          (recur (+ char-idx chunk-len)
+                 (+ data-idx output-len)))
+        ;; Done encoding, finish loop.
+        (do
+          ;; Sanity check that we read the expected number of bytes.
+          (when (not= data-len data-idx)
+            (throw (ex-info (str "Expected to decode " char-len " digits into "
+                                 data-len " bytes, but only got " data-idx)
+                            {:string string
+                             :output data})))
+          data)))))
 
 
 ;; ## Fast Implementation
@@ -178,8 +202,9 @@
    (encode data hex? false))
   (^String
    [^bytes data hex? pad?]
-   #?(:clj (encode-fast data hex? pad?)
-      :default (encode-pure data hex? pad?))))
+   (when (and data (pos? (alength data)))
+     #?(:clj (encode-fast data hex? pad?)
+        :default (encode-pure data hex? pad?)))))
 
 
 (defn decode
@@ -193,5 +218,6 @@
    (decode string false))
   (^bytes
    [string hex?]
-   #?(:clj (decode-fast string hex?)
-      :default (decode-pure string hex?))))
+   (when-not (str/blank? string)
+     #?(:clj (decode-fast string hex?)
+        :default (decode-pure string hex?)))))
