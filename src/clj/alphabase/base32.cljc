@@ -1,6 +1,7 @@
 (ns alphabase.base32
   "Base32 implementation from RFC 4648, including the extended hexadecimal
   alphabet."
+  {:clj-kondo/ignore [:unused-private-var]}
   (:require
     [alphabase.bytes :as b]
     [clojure.math :as math]
@@ -16,7 +17,7 @@
 
 ;; ## Pure Implementation
 
-(defn- encode-pure
+(defn- encode*
   "Encode a byte array into a base32 string.
 
   Pure Clojure implementation."
@@ -92,7 +93,7 @@
           (str/join output))))))
 
 
-(defn- decode-pure
+(defn- decode*
   "Decode a byte array from a base32 string.
 
   Pure Clojure implementation."
@@ -164,32 +165,10 @@
           data)))))
 
 
-;; ## Fast Implementation
-
-#?(:clj
-   (defn- encode-fast
-     "Encode a byte array into a base32 string.
-
-     Optimized Java implementation."
-     ^String
-     [^bytes data hex? pad?]
-     (Base32/encode data (boolean hex?) (boolean pad?))))
-
-
-#?(:clj
-   (defn- decode-fast
-     "Decode a byte array from a base32 string.
-
-      Optimized Java implementation."
-     ^String
-     [^bytes data hex?]
-     (Base32/decode data (boolean hex?))))
-
-
-;; ## General API
+;; ## General Interface
 
 (defn encode
-  "Encode a byte array into a base32 string.
+  "Encode a byte array into a base32 string. Returns nil for nil or empty data.
 
    If `hex?` is true, this uses the extended hex alphabet instead of the RFC
    4648 alphabet. If `pad?` is true, the result will be extended with `=`
@@ -203,13 +182,14 @@
   (^String
    [^bytes data hex? pad?]
    (when (and data (pos? (alength data)))
-     #?(:clj (encode-fast data hex? pad?)
-        :default (encode-pure data hex? pad?)))))
+     #?(:clj (Base32/encode data (boolean hex?) (boolean pad?))
+        :default (encode* data hex? pad?)))))
 
 
 (defn decode
   "Decode a byte array from a base32 string. Handles both upper and lower case
-  characters, as well as trailing padding `=` characters.
+  characters, as well as trailing padding `=` characters. Returns nil for nil
+  or blank strings.
 
   If `hex?` is true, this uses the extended hex alphabet instead of the RFC
   4648 alphabet."
@@ -219,5 +199,5 @@
   (^bytes
    [string hex?]
    (when-not (str/blank? string)
-     #?(:clj (decode-fast string hex?)
-        :default (decode-pure string hex?)))))
+     #?(:clj (Base32/decode string (boolean hex?))
+        :default (decode* string hex?)))))

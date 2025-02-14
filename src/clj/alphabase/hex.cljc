@@ -1,6 +1,6 @@
 (ns alphabase.hex
   "Functions to encode and decode bytes as hexadecimal."
-  {:clj-kondo/ignore [:unused-namespace]}
+  {:clj-kondo/ignore [:unused-private-var]}
   (:require
     [alphabase.bytes :as b]
     [clojure.string :as str])
@@ -9,11 +9,15 @@
        alphabase.codec.Hex)))
 
 
+;; ## Utilities
+
 (defn byte->hex
   "Converts a single byte value to a two-character hex string."
   [value]
-  (let [hex #?(:clj (Integer/toHexString value)
-               :cljs (.toString value 16))]
+  {:pre [(number? value) (<= 0 value 255)]}
+  (let [hex (str/upper-case
+              #?(:clj (Integer/toHexString value)
+                 :cljs (.toString value 16)))]
     (if (= 1 (count hex))
       (str "0" hex)
       hex)))
@@ -22,68 +26,65 @@
 (defn hex->byte
   "Converts a two-character hex string into a byte value."
   [hex]
+  {:pre [(string? hex) (<= (count hex) 2)]}
   #?(:clj (Integer/parseInt hex 16)
      :cljs (js/parseInt hex 16)))
 
 
+;; ## Pure Implementation
+
+(defn- encode*
+  "Encode a byte array into a hexadecimal string.
+
+  Pure Clojure implementation."
+  ^String
+  [^bytes data]
+  (let [data-len (alength data)
+        output #?(:clj (object-array data-len)
+                  :cljs (make-array data-len))]
+    (dotimes [i data-len]
+      (aset output i (byte->hex (b/get-byte data i))))
+    (str/join output)))
+
+
+(defn- decode*
+  "Decode a byte array from a hexadecimal string.
+
+  Pure Clojure implementation."
+  ^bytes
+  [string]
+  {:pre [(even? (count string))]}
+  (let [length (/ (count string) 2)
+        data (b/byte-array length)]
+    (dotimes [i length]
+      (let [idx (* 2 i)
+            hex (subs string idx (+ idx 2))]
+        (when-not (re-matches #"[0-9a-fA-F]+" hex)
+          (throw (ex-info (str "Characters '" hex "' at index " idx
+                               " are not valid hexadecimal digits")
+                          {:string string
+                           :idx idx})))
+        (b/set-byte data i (hex->byte hex))))
+    data))
+
+
+;; ## General Interface
+
 (defn encode
-  "Converts a byte array into a lowercase hexadecimal string. Returns nil for
-  empty inputs."
+  "Encode a byte array into a hexadecimal string. Returns nil for nil or empty
+  data."
   ^String
   [^bytes data]
   (when (and data (pos? (alength data)))
-    #?(:clj
-       (Hex/encode data)
-
-       :default
-       (->> (b/byte-seq data)
-            (map byte->hex)
-            (str/join)
-            (str/lower-case)))))
+    #?(:clj (Hex/encode data)
+       :default (encode* data))))
 
 
 (defn decode
-  "Parses a hexadecimal string into a byte array. Ensures that the resulting
-  array is zero-padded to match the hex string length."
+  "Decode a byte array from a hexadecimal string. Handles both upper and lower case
+  characters. Returns nil for nil or blank strings."
   ^bytes
-  [^String data]
-  (when-not (str/blank? data)
-    #?(:clj
-       (Hex/decode data)
-
-       :default
-       (let [length (/ (count data) 2)
-             array (b/byte-array length)]
-         (dotimes [i length]
-           (let [hex (subs data (* 2 i) (* 2 (inc i)))]
-             (b/set-byte array i (hex->byte hex))))
-         array))))
-
-
-(defn validate
-  "Checks a string to determine whether it's well-formed hexadecimal. Returns
-  an error string if the argument is invalid."
-  ^String
-  [value]
-  (cond
-    (not (string? value))
-    (str "Value is not a string: " (pr-str value))
-
-    (not (re-matches #"^[0-9a-fA-F]*$" value))
-    (str "String '" value "' is not valid hex: "
-         "contains illegal characters")
-
-    (< (count value) 2)
-    "Hex string must contain at least one byte"
-
-    (odd? (count value))
-    (str "String '" value "' is not valid hex: "
-         "number of characters (" (count value) ") is odd")
-
-    :else nil))
-
-
-(defn valid?
-  "Returns true if the string is valid hexadecimal."
-  [value]
-  (nil? (validate value)))
+  [^String string]
+  (when-not (str/blank? string)
+    #?(:clj (Hex/decode string)
+       :default (decode* string))))

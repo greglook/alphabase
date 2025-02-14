@@ -6,7 +6,7 @@ package alphabase.codec;
  */
 public class Hex {
 
-    private static final char[] ALPHABET = "0123456789abcdef".toCharArray();
+    private static final char[] ALPHABET = "0123456789ABCDEF".toCharArray();
 
 
     /**
@@ -50,7 +50,7 @@ public class Hex {
         } else if ('A' <= c && c <= 'F') {
             return (c - 'A') + 10;
         } else {
-            throw new IllegalArgumentException("Unrecognized character in hex string at index " + idx + ": " + c);
+            throw new IllegalArgumentException("Character '" + c + "' at index " + idx + " is not a valid hexadecimal digit");
         }
     }
 

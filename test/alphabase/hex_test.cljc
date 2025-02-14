@@ -2,6 +2,7 @@
   (:require
     [alphabase.bytes :as b]
     [alphabase.hex :as hex]
+    [alphabase.test-util :as t]
     [clojure.test :refer [deftest testing is]]))
 
 
@@ -10,8 +11,8 @@
     (is (= "00" (hex/byte->hex 0)))
     (is (= "03" (hex/byte->hex 3)))
     (is (= "10" (hex/byte->hex 16)))
-    (is (= "7f" (hex/byte->hex 127)))
-    (is (= "ff" (hex/byte->hex 255))))
+    (is (= "7F" (hex/byte->hex 127)))
+    (is (= "FF" (hex/byte->hex 255))))
   (testing "hex->byte"
     (is (= 0 (hex/hex->byte "0")))
     (is (= 1 (hex/hex->byte "01")))
@@ -22,47 +23,66 @@
 
 
 (deftest encoding-test
-  (is (nil? (hex/encode nil))
-      "nil argument encodes to nil")
-  (is (nil? (hex/encode (b/byte-array 0)))
-      "empty byte array encodes to nil")
-  (is (= "00" (hex/encode (b/byte-array 1)))
-      "single zero byte encodes as two zero chars")
-  (is (= "007f" (hex/encode (doto (b/byte-array 2)
-                              (b/set-byte 1 127))))))
+  (testing "edge cases"
+    (is (nil? (hex/encode nil))
+        "nil encodes to nil")
+    (is (nil? (hex/encode (b/byte-array 0)))
+        "empty byte array encodes to nil"))
+  (testing "basic examples"
+    (is (= "00" (hex/encode (b/byte-array 1)))
+        "single zero byte encodes as two zero chars")
+    (is (= "007F" (hex/encode (doto (b/byte-array 2)
+                                (b/set-byte 1 127))))))
+  (testing "RFC examples"
+    (is (= "66" (hex/encode t/f)))
+    (is (= "666F" (hex/encode t/fo)))
+    (is (= "666F6F" (hex/encode t/foo)))
+    (is (= "666F6F62" (hex/encode t/foob)))
+    (is (= "666F6F6261" (hex/encode t/fooba)))
+    (is (= "666F6F626172" (hex/encode t/foobar)))))
 
 
 (deftest decoding-test
-  (is (nil? (hex/decode nil))
-      "nil argument decodes to nil")
-  (is (nil? (hex/decode ""))
-      "empty string decodes to nil")
-  (is (b/bytes= (b/byte-array 1) (hex/decode "00"))
-      "zero decodes as single zero byte")
-  (is (b/bytes= (b/init-bytes [10 0 127])
-                (hex/decode "0a007f"))))
+  (testing "edge cases"
+    (is (nil? (hex/decode nil))
+        "nil argument decodes to nil")
+    (is (nil? (hex/decode ""))
+        "empty string decodes to nil")
+    (is (thrown-with-msg? #?(:clj Exception, :cljs js/Error)
+                          #?(:clj #"Character '@' at index 3 is not a valid hexadecimal digit"
+                             :cljs #"Characters '2@' at index 2 are not valid hexadecimal digits")
+          (hex/decode "012@4abc"))))
+  (testing "basic examples"
+    (is (b/bytes= (b/byte-array 1) (hex/decode "00"))
+        "zero decodes as single zero byte")
+    (is (b/bytes= (b/init-bytes [10 0 127])
+                  (hex/decode "0a007f"))))
+  (testing "RFC examples"
+    (is (= [0x66] (b/byte-seq (hex/decode "66"))))
+    (is (= [0x66 0x6F] (b/byte-seq (hex/decode "666F"))))
+    (is (= [0x66 0x6F 0x6F] (b/byte-seq (hex/decode "666F6F"))))
+    (is (= [0x66 0x6F 0x6F 0x62] (b/byte-seq (hex/decode "666F6F62"))))
+    (is (= [0x66 0x6F 0x6F 0x62 0x61] (b/byte-seq (hex/decode "666F6F6261"))))
+    (is (= [0x66 0x6F 0x6F 0x62 0x61 0x72] (b/byte-seq (hex/decode "666F6F626172"))))))
 
 
-(deftest reflexive-encoding
-  (dotimes [_ 10]
-    (let [data (b/random-bytes 30)
-          encoded (hex/encode data)
-          decoded (hex/decode encoded)]
-      (is (b/bytes= data decoded)
-          (str "Hex coding is reflexive for "
-               (pr-str (b/byte-seq data)))))))
-
-
-(deftest hex-validation
-  (testing "validation errors"
-    (is (re-seq #"not a string" (hex/validate 123)))
-    (is (re-seq #"contains illegal characters" (hex/validate "012xabc")))
-    (is (re-seq #"must contain at least one byte" (hex/validate "0")))
-    (is (re-seq #"number of characters .+ is odd" (hex/validate "012ab")))
-    (is (nil? (hex/validate "012abc"))))
-  (testing "validation predicate"
-    (is (false? (hex/valid? 123)))
-    (is (false? (hex/valid? "012xabc")))
-    (is (false? (hex/valid? "0")))
-    (is (false? (hex/valid? "012ab")))
-    (is (true? (hex/valid? "012abc")))))
+(deftest round-trips
+  (dotimes [_ 100]
+    (let [length (inc (rand-int 128))
+          data (b/random-bytes length)]
+      (testing "reflexive encoding"
+        (is (b/bytes= data (hex/decode (hex/encode data)))
+            (str "byte sequence "
+                 (pr-str (b/byte-seq data))
+                 " should round-trip")))
+      #?(:clj
+         (testing "pure vs fast"
+           (let [string (#'hex/encode* data)]
+             (is (= string (hex/encode data))
+                 (str "encoding byte sequence "
+                      (pr-str (b/byte-seq data))
+                      " should produce identical strings"))
+             (is (b/bytes= (#'hex/decode* string)
+                           (hex/decode string))
+                 (str "decoding string " string
+                      " should produce identical byte sequences"))))))))
