@@ -2,7 +2,7 @@
   "Functions to encode and decode bytes as hexadecimal."
   {:clj-kondo/ignore [:unused-namespace]}
   (:require
-    [alphabase.bytes :as bytes]
+    [alphabase.bytes :as b]
     [clojure.string :as str])
   #?(:clj
      (:import
@@ -36,7 +36,7 @@
        (Hex/encode data)
 
        :default
-       (->> (bytes/byte-seq data)
+       (->> (b/byte-seq data)
             (map byte->hex)
             (str/join)
             (str/lower-case)))))
@@ -53,10 +53,10 @@
 
        :default
        (let [length (/ (count data) 2)
-             array (bytes/byte-array length)]
+             array (b/byte-array length)]
          (dotimes [i length]
            (let [hex (subs data (* 2 i) (* 2 (inc i)))]
-             (bytes/set-byte array i (hex->byte hex))))
+             (b/set-byte array i (hex->byte hex))))
          array))))
 
 
