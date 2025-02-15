@@ -71,13 +71,13 @@
                  offset (dec output-len)]
             (when (<= 0 offset)
               (let [digit (nth alphabet (bit-and lo 0x1F))]
-                (aset output (+ char-idx offset) digit)
+                (aset output (+ char-idx offset) (char digit))
                 (recur (unsigned-bit-shift-right hi 5)
                        (bit-or (unsigned-bit-shift-right lo 5)
                                (bit-shift-left (bit-and hi 0x1F) 27))
                        (dec offset)))))
-          (recur (+ data-idx chunk-len)
-                 (+ char-idx output-len)))
+          (recur (long (+ data-idx chunk-len))
+                 (long (+ char-idx output-len))))
         ;; Done encoding, finish loop.
         (do
           ;; Write padding characters if set.
@@ -152,8 +152,8 @@
                      (bit-or (unsigned-bit-shift-right lo 8)
                              (bit-shift-left (bit-and hi 0xFF) 24))
                      (dec offset))))
-          (recur (+ char-idx chunk-len)
-                 (+ data-idx output-len)))
+          (recur (long (+ char-idx chunk-len))
+                 (long (+ data-idx output-len))))
         ;; Done encoding, finish loop.
         (do
           ;; Sanity check that we read the expected number of bytes.
