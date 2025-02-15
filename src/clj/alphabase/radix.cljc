@@ -56,38 +56,39 @@
   ^String
   [alphabet string]
   (let [base (count alphabet)
-        zeros (count (take-while #{(first alphabet)} string))]
-    (if (= zeros (count string))
+        zeros (count (take-while #{(first alphabet)} string))
+        str-len (count string)]
+    (if (= zeros str-len)
       (b/byte-array zeros)
-      (let [byte-vals (->>
-                        (seq string)
-                        (reduce
-                          (fn add-digit
-                            [bytev digit]
-                            (let [value (str/index-of alphabet (str digit))]
-                              (when (neg? value)
-                                (throw (ex-info
-                                         (str "Invalid digit " (pr-str digit) " is not in " *ns*
-                                              " (" base ") alphabet")
-                                         {:alphabet alphabet, :digit digit})))
-                              (loop [bytev bytev
-                                     carry value
-                                     i 0]
-                                (if (< i (count bytev))
-                                  ;; Emit bytes as we carry values forward.
-                                  (let [carry' (+ carry (* base (nth bytev i)))]
-                                    (recur (assoc! bytev i (bit-and carry' 0xff))
-                                           (bit-shift-right carry' 8)
-                                           (inc i)))
-                                  ;; Outside bytes, add new for remaining carry.
-                                  (if (pos? carry)
-                                    (recur (conj! bytev (bit-and carry 0xff))
-                                           (bit-shift-right carry 8)
-                                           (inc i))
-                                    bytev)))))
-                          (transient [0]))
-                        (persistent!)
-                        (reverse))
+      (let [byte-vals (loop [bytev (transient [0])
+                             char-idx 0]
+                        (if (< char-idx str-len)
+                          ;; Multiply next digit into number.
+                          (let [digit (nth string char-idx)
+                                value (or (str/index-of alphabet (str digit))
+                                          (throw (ex-info
+                                                   (str "Character '" digit "' at index "
+                                                        char-idx " is not a valid digit")
+                                                   {:alphabet alphabet
+                                                    :digit digit})))
+                                bytev (loop [bytev bytev
+                                             carry value
+                                             i 0]
+                                        (if (< i (count bytev))
+                                          ;; Emit bytes as we carry values forward.
+                                          (let [carry' (+ carry (* base (nth bytev i)))]
+                                            (recur (assoc! bytev i (bit-and carry' 0xff))
+                                                   (bit-shift-right carry' 8)
+                                                   (inc i)))
+                                          ;; Outside bytes, add new for remaining carry.
+                                          (if (pos? carry)
+                                            (recur (conj! bytev (bit-and carry 0xff))
+                                                   (bit-shift-right carry 8)
+                                                   (inc i))
+                                            bytev)))]
+                            (recur bytev (inc char-idx)))
+                          ;; Done decoding
+                          (reverse (persistent! bytev))))
             data (b/byte-array (+ zeros (count byte-vals)))]
         (dotimes [i (count byte-vals)]
           (b/set-byte data (+ zeros i) (nth byte-vals i)))

@@ -55,7 +55,7 @@ public class Radix {
         BigInteger bigBase = BigInteger.valueOf((long)base);
         BigInteger n = new BigInteger(1, data);
 
-        while (n.compareTo(bigBase) > 0) {
+        while (n.compareTo(bigBase) >= 0) {
             BigInteger digit = n.mod(bigBase);
             buf.append(alphabet.charAt(digit.intValue()));
             n = n.subtract(digit).divide(bigBase);
