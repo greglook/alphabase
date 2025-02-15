@@ -53,7 +53,11 @@
         "empty string decodes to nil")
     (is (thrown-with-msg? #?(:clj Exception, :cljs js/Error)
                           #"Character '@' at index 3 is not a valid Base32 digit"
-          (b32/decode "MZX@W6YQ"))))
+          (b32/decode "MZX@W6YQ")))
+    #?(:clj
+       (is (thrown-with-msg? Exception
+                             #"Character '@' at index 3 is not a valid Base32 digit"
+             (#'b32/decode* "MZX@W6YQ" false)))))
   (testing "RFC examples"
     (testing "for base32"
       (testing "without padding"

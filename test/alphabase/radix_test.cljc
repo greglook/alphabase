@@ -30,10 +30,16 @@
         "empty string decodes to nil")
     (is (thrown-with-msg? #?(:clj Exception, :cljs js/Error)
                           #"Character '@' at index 3 is not a valid digit"
-          (radix/decode test-alphabet "abc@de"))))
+          (radix/decode test-alphabet "abc@de")))
+    #?(:clj
+       (is (thrown-with-msg? Exception
+                             #"Character '@' at index 3 is not a valid digit"
+             (#'radix/decode* test-alphabet "abc@de")))))
   (testing "basic examples"
     (is (b/bytes= (b/byte-array 1) (radix/decode test-alphabet "a"))
         "zero digit decodes as single zero byte")
+    (is (b/bytes= (b/byte-array 3) (#'radix/decode* test-alphabet "aaa"))
+        "multiple zero digits decodes as zero bytes")
     (is (= [164 69 87] (b/byte-seq (radix/decode test-alphabet "bahgfgff"))))))
 
 

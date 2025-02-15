@@ -51,7 +51,11 @@
     (is (thrown-with-msg? #?(:clj Exception, :cljs js/Error)
                           #?(:clj #"Character '@' at index 3 is not a valid hexadecimal digit"
                              :cljs #"Characters '2@' at index 2 are not valid hexadecimal digits")
-          (hex/decode "012@4abc"))))
+          (hex/decode "012@4abc")))
+    #?(:clj
+       (is (thrown-with-msg? Exception
+                             #"Characters '2@' at index 2 are not valid hexadecimal digits"
+             (#'hex/decode* "012@4abc")))))
   (testing "basic examples"
     (is (b/bytes= (b/byte-array 1) (hex/decode "00"))
         "zero decodes as single zero byte")

@@ -79,17 +79,14 @@
           (recur (long (+ data-idx chunk-len))
                  (long (+ char-idx output-len))))
         ;; Done encoding, finish loop.
-        (do
+        (let [final-idx (+ char-idx padding-len)]
           ;; Write padding characters if set.
           (dotimes [i padding-len]
             (aset output (+ char-idx i) \=))
           ;; Sanity check that we wrote the expected number of characters.
-          (let [char-idx (+ char-idx padding-len)]
-            (when (not= (alength output) char-idx)
-              (throw (ex-info (str "Expected to encode " data-len " byte array into "
-                                   (alength output) " characters, but only got " char-idx)
-                              {:data data
-                               :output (str/join output)}))))
+          (assert (= (alength output) final-idx)
+                  (str "Expected to encode " data-len " byte array into "
+                       (alength output) " characters, but only got " final-idx))
           (str/join output))))))
 
 
@@ -157,11 +154,9 @@
         ;; Done encoding, finish loop.
         (do
           ;; Sanity check that we read the expected number of bytes.
-          (when (not= data-len data-idx)
-            (throw (ex-info (str "Expected to decode " char-len " digits into "
-                                 data-len " bytes, but only got " data-idx)
-                            {:string string
-                             :output data})))
+          (assert (= data-len data-idx)
+                  (str "Expected to decode " char-len " digits into "
+                       data-len " bytes, but only got " data-idx))
           data)))))
 
 
