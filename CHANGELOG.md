@@ -7,7 +7,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+This is a new release of alphabase with some major changes. Most significantly,
+the JVM-targeted implementation is now written in Java for performance,
+resulting in several 10x-100x speedups and better memory efficiency.
+Javascript-targeted code continues to be written in (mostly) pure
+Clojurescript.
+
+The second significant change is that the prior Base32 implementation was
+incorrect; it was using the same radix-encoding approach as Base58, but that
+produced the wrong results. The data did round-trip, but this was not compliant
+with RFC 4648. **If you serialized data with the 2.x version, it will not
+deserialize correctly with 3.x!** Sorry about that.
+
+### Changed
+- Switched to tools.build and updated CI and other development tools.
+- Rewrote JVM implementations in Java for speed and efficiency.
+- Hex and Base32 strings now default to upper-case for consistency.
+- **Breaking:** `alphabase.core` is now `alphabase.radix` if you need customized encoding.
+
+### Fixed
+- Base32 encoding now complies with RFC 4648.
+- Standardized error messages across the codecs.
+
+### Added
+- New `alphabase.base64` convenience namespace provides the standard library
+  Base64 implementations in Java and Google Closure.
+
 
 ## [2.1.1] - 2021-11-07
 

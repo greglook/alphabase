@@ -21,7 +21,7 @@
 (def basis (b/create-basis {:project "deps.edn"}))
 
 (def lib-name 'mvxcvi/alphabase)
-(def major-version "2.2")
+(def major-version "3.0")
 
 (def clj-src-dir "src/clj")
 (def java-src-dir "src/java")
@@ -91,14 +91,20 @@
         (->> (spit file)))))
 
 
-(defn prep-release
-  "Prepare the repository for release."
-  [opts]
+(defn- fail-if-dirty!
+  "Exit with an error if the local repository has uncommitted changes."
+  []
   (let [status (b/git-process {:git-args "status --porcelain --untracked-files=no"})]
     (when-not (str/blank? status)
       (binding [*out* *err*]
         (println "Uncommitted changes in local repository, aborting")
-        (System/exit 2))))
+        (System/exit 2)))))
+
+
+(defn prep-release
+  "Prepare the repository for release."
+  [opts]
+  (fail-if-dirty!)
   (let [version (version-info opts true)
         tag (:tag version)]
     (update-changelog version)
@@ -197,6 +203,7 @@
 (defn deploy
   "Publish the library to Clojars."
   [opts]
+  (fail-if-dirty!)
   (let [opts (-> opts clean jar)
         version (:version opts)
         signing-key-id (System/getenv "CLOJARS_SIGNING_KEY")
