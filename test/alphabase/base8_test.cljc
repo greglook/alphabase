@@ -1,9 +1,8 @@
 (ns alphabase.base8-test
   (:require
-    [alphabase.bytes :as b]
     [alphabase.base8 :as b8]
+    [alphabase.bytes :as b]
     [clojure.test :refer [deftest testing is]]))
-
 
 
 (deftest encoding-test

@@ -1,7 +1,7 @@
 (ns alphabase.base16-test
   (:require
-    [alphabase.bytes :as b]
     [alphabase.base16 :as b16]
+    [alphabase.bytes :as b]
     [alphabase.test-util :as t]
     [clojure.test :refer [deftest testing is]]))
 
