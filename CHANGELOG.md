@@ -23,7 +23,7 @@ deserialize correctly with 3.x!** Sorry about that.
 ### Changed
 - **Breaking:** `alphabase.core` is now `alphabase.radix` if you need customized encoding.
 - **Breaking:** `alphabase.hex` is now `alphabase.base16` for consistency with the other included bases.
-- **Breaking:** Hex and Base32 strings now default to upper-case encoding.
+- **Breaking:** Hex and base32 strings now default to upper-case encoding.
 - Switched to tools.build and updated CI and other development tools.
 - Rewrote Clojure implementations in Java for speed and efficiency.
 
@@ -32,7 +32,8 @@ deserialize correctly with 3.x!** Sorry about that.
 - Standardized error messages across the codecs.
 
 ### Added
-- New `alphabase.base8` namespace provides Octal encoding.
+- New `alphabase.base2` namespace provides binary encoding.
+- New `alphabase.base8` namespace provides octal encoding.
 - New `alphabase.base64` convenience namespace provides the standard library
   Base64 implementations in Java and Google Closure.
 
