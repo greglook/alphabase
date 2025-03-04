@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file, which
 follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## [Unreleased]
 
 This is a new release of alphabase with some major changes. Most significantly,
@@ -20,13 +21,14 @@ with RFC 4648. **If you serialized data with the 2.x version, it will not
 deserialize correctly with 3.x!** Sorry about that.
 
 ### Changed
-- Switched to tools.build and updated CI and other development tools.
-- Rewrote JVM implementations in Java for speed and efficiency.
-- Hex and Base32 strings now default to upper-case for consistency.
 - **Breaking:** `alphabase.core` is now `alphabase.radix` if you need customized encoding.
+- **Breaking:** `alphabase.hex` is now `alphabase.base16` for consistency with the other included bases.
+- **Breaking:** Hex and Base32 strings now default to upper-case encoding.
+- Switched to tools.build and updated CI and other development tools.
+- Rewrote Clojure implementations in Java for speed and efficiency.
 
 ### Fixed
-- Base32 encoding now complies with RFC 4648.
+- **Breaking:** Base32 encoding now complies with RFC 4648.
 - Standardized error messages across the codecs.
 
 ### Added

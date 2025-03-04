@@ -4,7 +4,7 @@ package alphabase.codec;
 /**
  * Utility code providing efficient hex codec operations in Clojure.
  */
-public class Hex {
+public class Base16 {
 
     private static final char[] ALPHABET = "0123456789ABCDEF".toCharArray();
 
@@ -12,7 +12,7 @@ public class Hex {
     /**
      * Static utility class doesn't need constructed instances.
      */
-    private Hex() {}
+    private Base16() {}
 
 
     /**

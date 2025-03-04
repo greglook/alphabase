@@ -1,4 +1,4 @@
-(ns alphabase.hex
+(ns alphabase.base16
   "Functions to encode and decode bytes as hexadecimal."
   {:clj-kondo/ignore [:unused-private-var]}
   (:require
@@ -6,7 +6,7 @@
     [clojure.string :as str])
   #?(:clj
      (:import
-       alphabase.codec.Hex)))
+       alphabase.codec.Base16)))
 
 
 ;; ## Utilities
@@ -76,7 +76,7 @@
   ^String
   [^bytes data]
   (when (and data (pos? (alength data)))
-    #?(:clj (Hex/encode data)
+    #?(:clj (Base16/encode data)
        :default (encode* data))))
 
 
@@ -86,5 +86,5 @@
   ^bytes
   [^String string]
   (when-not (str/blank? string)
-    #?(:clj (Hex/decode string)
+    #?(:clj (Base16/decode string)
        :default (decode* string))))
