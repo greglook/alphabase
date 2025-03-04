@@ -24,6 +24,7 @@ deserialize correctly with 3.x!** Sorry about that.
 - **Breaking:** `alphabase.core` is now `alphabase.radix` if you need customized encoding.
 - **Breaking:** `alphabase.hex` is now `alphabase.base16` for consistency with the other included bases.
 - **Breaking:** Hex and base32 strings now default to upper-case encoding.
+- `alphabase.bytes/random-bytes` now uses a cryptographically-strong API for random values in Javascript.
 - Switched to tools.build and updated CI and other development tools.
 - Rewrote Clojure implementations in Java for speed and efficiency.
 

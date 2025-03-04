@@ -3,7 +3,8 @@
   (:refer-clojure :exclude [bytes? byte-array compare concat])
   #?(:clj
      (:import
-       java.util.Arrays)))
+       java.util.Arrays
+       java.security.SecureRandom)))
 
 
 (defn to-byte
@@ -118,9 +119,8 @@
   ^bytes
   [length]
   (let [data (byte-array length)]
-    #?(:clj (.nextBytes (java.security.SecureRandom.) data)
-       :cljs (dotimes [i length]
-               (set-byte data i (rand-int 256))))
+    #?(:clj (.nextBytes (SecureRandom.) data)
+       :cljs (js/crypto.getRandomValues data))
     data))
 
 
