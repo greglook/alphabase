@@ -3,6 +3,7 @@
     [alphabase.base16 :as b16]
     [alphabase.base32 :as b32]
     [alphabase.base58 :as b58]
+    [alphabase.base8 :as b8]
     [alphabase.bytes :as b]
     [alphabase.radix :as radix]
     [clj-async-profiler.core :as prof]

@@ -32,6 +32,7 @@ deserialize correctly with 3.x!** Sorry about that.
 - Standardized error messages across the codecs.
 
 ### Added
+- New `alphabase.base8` namespace provides Octal encoding.
 - New `alphabase.base64` convenience namespace provides the standard library
   Base64 implementations in Java and Google Closure.
 
