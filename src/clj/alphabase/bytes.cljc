@@ -3,8 +3,8 @@
   (:refer-clojure :exclude [bytes? byte-array compare concat])
   #?(:clj
      (:import
-       java.util.Arrays
-       java.security.SecureRandom)))
+       java.security.SecureRandom
+       java.util.Arrays)))
 
 
 (defn to-byte

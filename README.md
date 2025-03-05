@@ -7,8 +7,8 @@ alphabase
 
 A simple cross-compiled Clojure(Script) library to handle encoding binary data
 in different bases using defined alphabets. If you've ever wanted a simple way
-to encode a byte array as hexadecimal, base32, or base58, this library is for
-you!
+to encode a byte array as a hexadecimal string, or base32, or other bases, this
+library is for you!
 
 
 ## Installation
@@ -22,14 +22,14 @@ following dependency to your project:
 ## Usage
 
 - `alphabase.bytes` namespace for generic byte-array handling
-- `alphabase.core` with arbitrary alphabet support
-- Built-in bases `alphabase.hex`, `alphabase.base32`, and `alphabase.base58`
+- `alphabase.radix` for arbitrary alphabet support
+- Built-in support for octal, hexadecimal, base32, base58, and base64
 
 ```clojure
 => (require '[alphabase.bytes :as b]
+            '[alphabase.base16 :as hex])
             '[alphabase.base32 :as b32]
             '[alphabase.base58 :as b58]
-            '[alphabase.hex :as hex])
 
 => (def data (b/random-bytes 32))
 
