@@ -8,6 +8,7 @@ package-lock.json
 /node_modules
 
 # Build outputs
+/*.pom.asc
 /target
 *.class
 *.jar
