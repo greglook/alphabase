@@ -33,6 +33,7 @@ deserialize correctly with 3.x!** Sorry about that.
 - Standardized error messages across the codecs.
 
 ### Added
+- Byte utilities for UTF-8 strings `b/from-string` and `b/to-string`.
 - New `alphabase.base2` namespace provides binary encoding.
 - New `alphabase.base8` namespace provides octal encoding.
 - New `alphabase.base64` convenience namespace provides the standard library

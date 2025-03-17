@@ -100,3 +100,11 @@
     [nil nil] []
     [[]] []
     [] []))
+
+
+(deftest string-utils
+  (let [foobits [102 111 111 32 98 97 114]]
+    (is (= foobits (b/byte-seq (b/from-string "foo bar"))))
+    (is (= "foo bar" (b/to-string (b/init-bytes foobits)))))
+  (is (= "hello" (b/to-string (b/from-string "hello"))))
+  (is (= "actual 🤔 utf8" (b/to-string (b/from-string "actual 🤔 utf8")))))

@@ -1,6 +1,9 @@
 (ns alphabase.bytes
   "Functions to generically handle byte arrays."
   (:refer-clojure :exclude [bytes? byte-array compare concat])
+  #?(:cljs
+     (:require
+       [goog.crypt :as crypt]))
   #?(:clj
      (:import
        java.security.SecureRandom
@@ -177,3 +180,19 @@
         (copy src 0 dst offset (alength src))
         (recur (rest arrs) (+ offset (alength src)))))
     dst))
+
+
+(defn from-string
+  "Convert the string to a UTF-8 byte array."
+  ^bytes
+  [^String string]
+  #?(:clj (.getBytes string "UTF-8")
+     :cljs (crypt/stringToUtf8ByteArray string)))
+
+
+(defn to-string
+  "Convert the UTF-8 byte array to a string."
+  ^String
+  [^bytes data]
+  #?(:clj (String. data "UTF-8")
+     :cljs (crypt/utf8ByteArrayToString data)))
