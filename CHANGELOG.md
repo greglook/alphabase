@@ -8,6 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+...
+
+
+## [3.0.182] - 2025-03-17
+
 This is a new release of alphabase with some major changes. Most significantly,
 the JVM-targeted implementation is now written in Java for performance,
 resulting in several 10x-100x speedups and better memory efficiency.
@@ -134,7 +139,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/2.1.1...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/3.0.182...HEAD
+[3.0.182]: https://github.com/greglook/alphabase/compare/2.1.1...3.0.182
 [2.1.1]: https://github.com/greglook/alphabase/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/greglook/alphabase/compare/2.0.4...2.1.0
 [2.0.4]: https://github.com/greglook/alphabase/compare/2.0.3...2.0.4
