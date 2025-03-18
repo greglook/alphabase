@@ -4,9 +4,11 @@
   (:require
     [alphabase.bytes :as b]
     [clojure.string :as str])
-  #?(:clj
-     (:import
-       alphabase.codec.Base16)))
+  #?@(:bb
+      []
+      :clj
+      [(:import
+         alphabase.codec.Base16)]))
 
 
 ;; ## Utilities
@@ -76,7 +78,8 @@
   ^String
   [^bytes data]
   (when (and data (pos? (alength data)))
-    #?(:clj (Base16/encode data)
+    #?(:bb (encode* data)
+       :clj (Base16/encode data)
        :default (encode* data))))
 
 
@@ -86,5 +89,6 @@
   ^bytes
   [^String string]
   (when-not (str/blank? string)
-    #?(:clj (Base16/decode string)
+    #?(:bb (decode* string)
+       :clj (Base16/decode string)
        :default (decode* string))))

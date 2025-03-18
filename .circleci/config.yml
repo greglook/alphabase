@@ -79,6 +79,24 @@ jobs:
             - ~/.m2
             - ~/repo/node_modules
 
+  test-bb:
+    executor: clojure
+    steps:
+      - run:
+          name: Install babashka
+          command: |
+            sudo bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-test-bb-{{ checksum "deps.edn" }}
+            - v1-test-bb-
+      - run: bin/test bb
+      - save_cache:
+          key: v1-test-bb-{{ checksum "deps.edn" }}
+          paths:
+            - ~/.m2
+
   coverage:
     executor: clojure
     steps:
@@ -123,6 +141,7 @@ workflows:
       - lint
       - test-clj
       - test-cljs
+      - test-bb
       - coverage:
           requires:
             - test-clj

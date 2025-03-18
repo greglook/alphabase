@@ -8,7 +8,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+A quick follow-up to make the library is usable with babashka, which can't use
+the optimized Java encoding implementations.
+
+### Fixed
+- Add reader conditionals for the `:bb` platform to use the pure-Clojure
+  implementations, similar to `:cljs`.
 
 
 ## [3.0.182] - 2025-03-17

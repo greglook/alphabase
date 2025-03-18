@@ -1,14 +1,14 @@
 # Build tooling
-package.json
-package-lock.json
+.nrepl-port
+.cljs_node_repl
 
 # Dependencies and caches
+/node_modules
 /.clj-kondo/.cache
 /.cpcache
-/node_modules
 
 # Build outputs
-/*.pom.asc
 /target
+*.pom.asc
 *.class
 *.jar

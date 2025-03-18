@@ -4,9 +4,11 @@
   (:require
     [alphabase.bytes :as b]
     [clojure.string :as str])
-  #?(:clj
-     (:import
-       alphabase.codec.Radix)))
+  #?@(:bb
+      []
+      :clj
+      [(:import
+         alphabase.codec.Radix)]))
 
 
 ;; ## Pure Implementation
@@ -104,7 +106,8 @@
   [^String alphabet ^bytes data]
   {:pre [(string? alphabet)]}
   (when (and data (pos? (alength data)))
-    #?(:clj (Radix/encode alphabet data)
+    #?(:bb (encode* alphabet data)
+       :clj (Radix/encode alphabet data)
        :default (encode* alphabet data))))
 
 
@@ -115,5 +118,6 @@
   [^String alphabet ^String string]
   {:pre [(string? alphabet)]}
   (when-not (str/blank? string)
-    #?(:clj (Radix/decode alphabet string)
+    #?(:bb (decode* alphabet string)
+       :clj (Radix/decode alphabet string)
        :default (decode* alphabet string))))

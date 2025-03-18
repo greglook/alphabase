@@ -6,9 +6,11 @@
     [alphabase.bytes :as b]
     [clojure.math :as math]
     [clojure.string :as str])
-  #?(:clj
-     (:import
-       alphabase.codec.Base32)))
+  #?@(:bb
+      []
+      :clj
+      [(:import
+         alphabase.codec.Base32)]))
 
 
 (def ^:const rfc-alphabet "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")
@@ -177,7 +179,8 @@
   (^String
    [^bytes data hex? pad?]
    (when (and data (pos? (alength data)))
-     #?(:clj (Base32/encode data (boolean hex?) (boolean pad?))
+     #?(:bb (encode* data hex? pad?)
+        :clj (Base32/encode data (boolean hex?) (boolean pad?))
         :default (encode* data hex? pad?)))))
 
 
@@ -194,5 +197,6 @@
   (^bytes
    [string hex?]
    (when-not (str/blank? string)
-     #?(:clj (Base32/decode string (boolean hex?))
+     #?(:bb (decode* string hex?)
+        :clj (Base32/decode string (boolean hex?))
         :default (decode* string hex?)))))

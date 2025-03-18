@@ -49,7 +49,8 @@
     (is (nil? (b16/decode ""))
         "empty string decodes to nil")
     (is (thrown-with-msg? #?(:clj Exception, :cljs js/Error)
-                          #?(:clj #"Character '@' at index 3 is not a valid hexadecimal digit"
+                          #?(:bb #"Characters '2@' at index 2 are not valid hexadecimal digits"
+                             :clj #"Character '@' at index 3 is not a valid hexadecimal digit"
                              :cljs #"Characters '2@' at index 2 are not valid hexadecimal digits")
           (b16/decode "012@4abc")))
     #?(:clj
