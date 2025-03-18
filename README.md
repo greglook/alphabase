@@ -34,7 +34,7 @@ following dependency to your project:
 => (def data (b/random-bytes 32))
 
 => (hex/encode data)
-"333a0fc9d17e07ff9a75afca02df9ab32fdb9eb71565e810e981773bdd1e0c90"
+"333A0FC9D17E07FF9A75AFCA02DF9AB32FDB9EB71565E810E981773BDD1E0C90"
 
 => (b/bytes= data (hex/decode *1))
 true
@@ -67,16 +67,16 @@ bin/test clj
 
 # ClojureScript tests on Node
 bin/test cljs
+
+# Babashka tests
+bin/test bb
 ```
 
-For a REPL, you can use these:
+For interactive development, start a REPL:
 
 ```sh
 # Clojure REPL
 bin/repl
-
-# ClojureScript REPL
-bin/repl cljs
 ```
 
 
