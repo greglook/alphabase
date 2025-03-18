@@ -8,6 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+...
+
+
+## [3.0.185] - 2025-03-17
+
 A quick follow-up to make the library is usable with babashka, which can't use
 the optimized Java encoding implementations.
 
@@ -144,7 +149,8 @@ This project has been stable for a while now, so bumping the version to 1.0.0.
 
 Initial project release.
 
-[Unreleased]: https://github.com/greglook/alphabase/compare/3.0.182...HEAD
+[Unreleased]: https://github.com/greglook/alphabase/compare/3.0.185...HEAD
+[3.0.185]: https://github.com/greglook/alphabase/compare/3.0.182...3.0.185
 [3.0.182]: https://github.com/greglook/alphabase/compare/2.1.1...3.0.182
 [2.1.1]: https://github.com/greglook/alphabase/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/greglook/alphabase/compare/2.0.4...2.1.0
