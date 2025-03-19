@@ -6,7 +6,7 @@ set -e
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if [[ $1 = clean ]]; then
-    rm -rf out target
+    rm -rf target
 
 elif [[ $1 = deploy ]]; then
     shift

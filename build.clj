@@ -60,7 +60,7 @@
   "Format the version string from the `version-info` map."
   [version]
   (let [{:keys [tag commit date]} version]
-    (format "mvxcvi/alphabase %s (built from %s on %s)" tag commit date)))
+    (format "%s %s (built from %s on %s)" lib-name tag commit date)))
 
 
 (defn print-version
